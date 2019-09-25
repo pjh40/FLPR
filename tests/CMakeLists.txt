@@ -37,6 +37,7 @@ set(TEST_EXE
   "test_parse_substmt"
   "test_parse_type_decl"
   "test_parse_prgm"
+  "test_abstract_stmt"
   )
 
 # Create tests from each entry in TEST_EXE
