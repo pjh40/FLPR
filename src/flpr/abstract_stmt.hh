@@ -20,7 +20,6 @@
 
 namespace FLPR {
 
-
 //! Namespace containing Stmt_Tree->AST converters
 namespace AST {
 
@@ -31,23 +30,23 @@ public:
   using value_type = st_cursor::value_type;
   using reference = st_cursor::reference;
   using pointer = st_cursor::pointer;
+
 public:
   AST_Node_Data() : syntag_(Syntax_Tags::UNKNOWN) {}
   AST_Node_Data(int syntag) : syntag_(syntag) {}
-  AST_Node_Data(int syntag, st_cursor const &stc) : syntag_(syntag),stc_(stc) {}
+  AST_Node_Data(int syntag, st_cursor const &stc)
+      : syntag_(syntag), stc_(stc) {}
   constexpr int syntag() const { return syntag_; }
   constexpr bool has_stmt_cursor() const { return stc_ == true; }
   st_cursor stmt_cursor() const { return stc_; }
-  Token_Text const & front_tt() const {
-    return stc_->token_range.front();
-  }
+  Token_Text const &front_tt() const { return stc_->token_range.front(); }
+
 private:
   int syntag_;
   st_cursor stc_;
 };
 
 using AS_Tree = Tree<AST_Node_Data>;
-
 
 std::ostream &operator<<(std::ostream &os, AST_Node_Data const &nd);
 

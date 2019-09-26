@@ -19,28 +19,30 @@ namespace AST {
 
 #define TAG(X) Syntax_Tags::X
 
-bool back_subtree_filled(AS_Tree const & tree) {
+bool back_subtree_filled(AS_Tree const &tree) {
   return tree.croot()->branches().back().size() > 1;
 }
 
-#define EXPECT(TEVAL, TACTUAL) \
-  if((TACTUAL) != (Syntax_Tags::TEVAL)) {                               \
-    std::cerr << "Expected " #TACTUAL "=" << Syntax_Tags::label(Syntax_Tags::TEVAL) << ", but got " << Syntax_Tags::label(TACTUAL) << std::endl; \
-  assert((TACTUAL) == (Syntax_Tags::TEVAL)); }
-
+#define EXPECT(TEVAL, TACTUAL)                                                 \
+  if ((TACTUAL) != (Syntax_Tags::TEVAL)) {                                     \
+    std::cerr << "Expected " #TACTUAL "="                                      \
+              << Syntax_Tags::label(Syntax_Tags::TEVAL) << ", but got "        \
+              << Syntax_Tags::label(TACTUAL) << std::endl;                     \
+    assert((TACTUAL) == (Syntax_Tags::TEVAL));                                 \
+  }
 
 AS_Tree dummy_arg_name_list(st_cursor stc) {
   AS_Tree ast{TAG(SG_DUMMY_ARG_NAME_LIST)};
-  if(TAG(SG_DUMMY_ARG_NAME_LIST) == stc->syntag) { 
+  if (TAG(SG_DUMMY_ARG_NAME_LIST) == stc->syntag) {
     stc.down();
     do {
       assert(Syntax_Tags::is_name(stc->syntag));
       ast.graft_back(AS_Tree{TAG(TK_NAME), stc});
-      if(stc.has_next()) {
+      if (stc.has_next()) {
         stc.next();
         EXPECT(TK_COMMA, stc->syntag);
       }
-    } while(stc.try_next());
+    } while (stc.try_next());
   }
   return ast;
 }
@@ -48,7 +50,7 @@ AS_Tree dummy_arg_name_list(st_cursor stc) {
 AS_Tree function_stmt(st_cursor stc) {
   // FUNCTION < prefix name args suffix>
   AS_Tree ast{TAG(KW_FUNCTION)};
-  if(TAG(SG_FUNCTION_STMT) == stc->syntag) {
+  if (TAG(SG_FUNCTION_STMT) == stc->syntag) {
     stc.down();
     ast.graft_back(prefix(stc)); // prefix is always there
     stc.next();
@@ -60,12 +62,13 @@ AS_Tree function_stmt(st_cursor stc) {
     EXPECT(TK_PARENL, stc->syntag);
     stc.next();
     ast.graft_back(dummy_arg_name_list(stc));
-    if(back_subtree_filled(ast)) stc.next();
+    if (back_subtree_filled(ast))
+      stc.next();
     EXPECT(TK_PARENR, stc->syntag);
     stc.try_next();
     ast.graft_back(suffix(stc));
   }
-  
+
   return ast;
 }
 

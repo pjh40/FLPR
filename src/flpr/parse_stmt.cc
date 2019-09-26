@@ -3745,7 +3745,7 @@ Stmt_Tree parse_stmt_dispatch(int stmt_tag, TT_Stream &ts) {
     return associate_stmt(ts);
     break;
   case TAG(SG_ASYNCHRONOUS_STMT):
-    return asynchronous_stmt(ts); 
+    return asynchronous_stmt(ts);
     break;
   case TAG(SG_ARITHMETIC_IF_STMT):
     return arithmetic_if_stmt(ts);
@@ -3754,7 +3754,7 @@ Stmt_Tree parse_stmt_dispatch(int stmt_tag, TT_Stream &ts) {
     return backspace_stmt(ts);
     break;
   case TAG(SG_BIND_STMT):
-    return bind_stmt(ts); 
+    return bind_stmt(ts);
     break;
   case TAG(SG_BINDING_PRIVATE_STMT):
     return binding_private_stmt(ts);
@@ -3772,7 +3772,7 @@ Stmt_Tree parse_stmt_dispatch(int stmt_tag, TT_Stream &ts) {
     return close_stmt(ts);
     break;
   case TAG(SG_CODIMENSION_STMT):
-    return codimension_stmt(ts); 
+    return codimension_stmt(ts);
     break;
   case TAG(SG_COMMON_STMT):
     return common_stmt(ts);
@@ -3892,10 +3892,10 @@ Stmt_Tree parse_stmt_dispatch(int stmt_tag, TT_Stream &ts) {
     return error_stop_stmt(ts);
     break;
   case TAG(SG_EVENT_POST_STMT):
-    return event_post_stmt(ts); 
+    return event_post_stmt(ts);
     break;
   case TAG(SG_EVENT_WAIT_STMT):
-    return event_wait_stmt(ts); 
+    return event_wait_stmt(ts);
     break;
   case TAG(SG_EXIT_STMT):
     return exit_stmt(ts);
@@ -3904,7 +3904,7 @@ Stmt_Tree parse_stmt_dispatch(int stmt_tag, TT_Stream &ts) {
     return external_stmt(ts);
     break;
   case TAG(SG_FAIL_IMAGE_STMT):
-    return fail_image_stmt(ts); 
+    return fail_image_stmt(ts);
     break;
   case TAG(SG_FLUSH_STMT):
     return flush_stmt(ts);
@@ -3919,7 +3919,7 @@ Stmt_Tree parse_stmt_dispatch(int stmt_tag, TT_Stream &ts) {
     return forall_stmt(ts);
     break;
   case TAG(SG_FORM_TEAM_STMT):
-    return form_team_stmt(ts); 
+    return form_team_stmt(ts);
     break;
   case TAG(SG_FORMAT_STMT):
     return format_stmt(ts);
@@ -3964,7 +3964,7 @@ Stmt_Tree parse_stmt_dispatch(int stmt_tag, TT_Stream &ts) {
     return label_do_stmt(ts);
     break;
   case TAG(SG_LOCK_STMT):
-    return lock_stmt(ts); 
+    return lock_stmt(ts);
     break;
   case TAG(SG_LOOP_CONTROL):
     return loop_control(ts);
@@ -4066,19 +4066,19 @@ Stmt_Tree parse_stmt_dispatch(int stmt_tag, TT_Stream &ts) {
     return subroutine_stmt(ts);
     break;
   case TAG(SG_SYNC_ALL_STMT):
-    return sync_all_stmt(ts); 
+    return sync_all_stmt(ts);
     break;
   case TAG(SG_SYNC_IMAGES_STMT):
-    return sync_images_stmt(ts); 
+    return sync_images_stmt(ts);
     break;
   case TAG(SG_SYNC_MEMORY_STMT):
-    return sync_memory_stmt(ts); 
+    return sync_memory_stmt(ts);
     break;
   case TAG(SG_SYNC_TEAM_STMT):
     return sync_team_stmt(ts);
     break;
   case TAG(SG_TARGET_STMT):
-    return target_stmt(ts); 
+    return target_stmt(ts);
     break;
   case TAG(SG_TYPE_BOUND_GENERIC_STMT):
     return type_bound_generic_stmt(ts);
@@ -4096,7 +4096,7 @@ Stmt_Tree parse_stmt_dispatch(int stmt_tag, TT_Stream &ts) {
     return type_param_def_stmt(ts);
     break;
   case TAG(SG_UNLOCK_STMT):
-    return unlock_stmt(ts); 
+    return unlock_stmt(ts);
     break;
   case TAG(SG_USE_STMT):
     return use_stmt(ts);
@@ -4108,7 +4108,7 @@ Stmt_Tree parse_stmt_dispatch(int stmt_tag, TT_Stream &ts) {
     return volatile_stmt(ts);
     break;
   case TAG(SG_WAIT_STMT):
-    return wait_stmt(ts); 
+    return wait_stmt(ts);
     break;
   case TAG(SG_WHERE_CONSTRUCT_STMT):
     return where_construct_stmt(ts);
