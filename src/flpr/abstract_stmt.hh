@@ -38,6 +38,9 @@ public:
   constexpr int syntag() const { return syntag_; }
   constexpr bool has_stmt_cursor() const { return stc_ == true; }
   st_cursor stmt_cursor() const { return stc_; }
+  Token_Text const & front_tt() const {
+    return stc_->token_range.front();
+  }
 private:
   int syntag_;
   st_cursor stc_;
