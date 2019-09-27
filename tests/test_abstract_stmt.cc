@@ -60,9 +60,45 @@ bool function_stmt() {
   return true;
 }
 
+bool subroutine_stmt() {
+  {
+    AS_STMT(subroutine_stmt, "subroutine foo(a,*)");
+    TEST_INT(ast.size(), 7);
+    auto c = ast.ccursor();
+    TEST_INT(c.num_branches(), 4);
+    c.down();
+
+    TEST_TOK(SG_PREFIX, c->syntag());
+    TEST_FALSE(c->has_stmt_cursor());
+    TEST_INT(c.num_branches(), 0);
+    c.next();
+
+    TEST_TOK(TK_NAME, c->syntag());
+    TEST_TRUE(c->has_stmt_cursor());
+    TEST_TOK(TK_NAME, c->stmt_cursor()->syntag);
+    TEST_INT(c->stmt_cursor()->token_range.size(), 1);
+    TEST_STR("foo", c->front_tt().text());
+    TEST_INT(c.num_branches(), 0);
+    c.next();
+
+    TEST_TOK(SG_DUMMY_ARG_LIST, c->syntag());
+    TEST_INT(c.num_branches(), 2);
+    c.down();
+    TEST_STR("a", c->front_tt().text());
+    c.next();
+    TEST_STR("*", c->front_tt().text());
+    c.up();
+    
+    c.next();
+    TEST_TOK(SG_SUFFIX, c->syntag());
+  }
+  return true;
+}
+
 
 int main() {
   TEST_MAIN_DECL;
   TEST(function_stmt);
+  TEST(subroutine_stmt);
   TEST_MAIN_REPORT;
 }

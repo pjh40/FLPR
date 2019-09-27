@@ -223,6 +223,8 @@ AS_Tree defined_io_generic_spec(st_cursor stc);
 AS_Tree derived_type_spec(st_cursor stc);
 AS_Tree designator(st_cursor stc);
 AS_Tree dummy_arg(st_cursor stc);
+AS_Tree dummy_arg_list(st_cursor stc);
+AS_Tree dummy_arg_name_list(st_cursor stc);
 AS_Tree explicit_coshape_spec(st_cursor stc);
 AS_Tree explicit_shape_spec(st_cursor stc);
 AS_Tree expr(st_cursor stc);

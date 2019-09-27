@@ -31,6 +31,23 @@ bool back_subtree_filled(AS_Tree const &tree) {
     assert((TACTUAL) == (Syntax_Tags::TEVAL));                                 \
   }
 
+AS_Tree dummy_arg_list(st_cursor stc) {
+  AS_Tree ast{TAG(SG_DUMMY_ARG_LIST)};
+  if (TAG(SG_DUMMY_ARG_LIST) == stc->syntag) {
+    stc.down();
+    do {
+      stc.down();
+      ast.graft_back(AS_Tree{stc->syntag, stc});
+      stc.up();
+      if (stc.has_next()) {
+        stc.next();
+        EXPECT(TK_COMMA, stc->syntag);
+      }
+    } while (stc.try_next());
+  }
+  return ast;
+}
+
 AS_Tree dummy_arg_name_list(st_cursor stc) {
   AS_Tree ast{TAG(SG_DUMMY_ARG_NAME_LIST)};
   if (TAG(SG_DUMMY_ARG_NAME_LIST) == stc->syntag) {
@@ -73,11 +90,38 @@ AS_Tree function_stmt(st_cursor stc) {
 }
 
 AS_Tree prefix(st_cursor stc) {
+  // FIX
   AS_Tree ast{TAG(SG_PREFIX)};
   return ast;
 }
 
+AS_Tree subroutine_stmt(st_cursor stc) {
+  // SUBROUTINE < prefix name args suffix>
+  AS_Tree ast{TAG(KW_SUBROUTINE)};
+  if (TAG(SG_SUBROUTINE_STMT) == stc->syntag) {
+    stc.down();
+    ast.graft_back(prefix(stc)); // prefix is always there
+    stc.next();
+    EXPECT(KW_SUBROUTINE, stc->syntag);
+    stc.next();
+    EXPECT(TK_NAME, stc->syntag);
+    ast.graft_back(AS_Tree{TAG(TK_NAME), stc});
+    stc.next();
+    EXPECT(TK_PARENL, stc->syntag);
+    stc.next();
+    ast.graft_back(dummy_arg_list(stc));
+    if (back_subtree_filled(ast))
+      stc.next();
+    EXPECT(TK_PARENR, stc->syntag);
+    stc.try_next();
+    ast.graft_back(suffix(stc));
+  }
+
+  return ast;
+}
+
 AS_Tree suffix(st_cursor stc) {
+  // FIX
   AS_Tree ast{TAG(SG_SUFFIX)};
   return ast;
 }
