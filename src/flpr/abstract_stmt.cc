@@ -19,6 +19,23 @@ namespace AST {
 
 #define TAG(X) Syntax_Tags::X
 
+
+std::ostream &operator<<(std::ostream &os, AST_Node_Data const &nd) {
+  os << FLPR::Syntax_Tags::label(nd.syntag());
+  if(nd.has_stmt_cursor()) {
+    auto stc {nd.stmt_cursor()};
+    os << ":\"" << stc->token_range.front().text() << "\"";
+    if(stc->token_range.size() > 2) {
+      os << "...\"" << stc->token_range.back().text() << "\"";
+    } else {
+      if(stc->token_range.size() == 2) {
+        os << " \"" << stc->token_range.back().text() << "\"";
+      }
+    }
+  }
+  return os;
+}
+
 bool back_subtree_filled(AS_Tree const &tree) {
   return tree.croot()->branches().back().size() > 1;
 }
@@ -90,8 +107,16 @@ AS_Tree function_stmt(st_cursor stc) {
 }
 
 AS_Tree prefix(st_cursor stc) {
-  // FIX
   AS_Tree ast{TAG(SG_PREFIX)};
+  if (TAG(SG_PREFIX) == stc->syntag) {
+    stc.down();
+    do {
+      EXPECT(SG_PREFIX_SPEC, stc->syntag);
+      stc.down();
+      ast.graft_back(AS_Tree{stc->syntag, stc});
+      stc.up();
+    } while(stc.try_next());
+  }
   return ast;
 }
 
@@ -106,15 +131,17 @@ AS_Tree subroutine_stmt(st_cursor stc) {
     stc.next();
     EXPECT(TK_NAME, stc->syntag);
     ast.graft_back(AS_Tree{TAG(TK_NAME), stc});
-    stc.next();
-    EXPECT(TK_PARENL, stc->syntag);
-    stc.next();
-    ast.graft_back(dummy_arg_list(stc));
-    if (back_subtree_filled(ast))
+    if(stc.has_next()) {
       stc.next();
-    EXPECT(TK_PARENR, stc->syntag);
-    stc.try_next();
-    ast.graft_back(suffix(stc));
+      EXPECT(TK_PARENL, stc->syntag);
+      stc.next();
+      ast.graft_back(dummy_arg_list(stc));
+      if (back_subtree_filled(ast))
+        stc.next();
+      EXPECT(TK_PARENR, stc->syntag);
+      stc.try_next();
+      ast.graft_back(suffix(stc));
+    }
   }
 
   return ast;
