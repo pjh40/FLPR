@@ -20,6 +20,6 @@ The master high-level include file for FLPR applications
 #include "flpr/Procedure.hh"
 #include "flpr/Procedure_Visitor.hh"
 #include "flpr/Stmt_Parser_Exts.hh"
+#include "flpr/abstract_stmt.hh"
 #include "flpr/utils.hh"
-
 #endif
