@@ -40,6 +40,7 @@ set(APPS_EXE
   "parse_files"
   "module"
   "ext_demo"
+  "flpr_interface"
   "flpr_show_cst")
 
 # Installation Info
