@@ -15,6 +15,7 @@
 */
 
 #include "flpr/flpr.hh"
+#include "flpr/astruct.hh"
 #include <iostream>
 
 #define TAG(X) FLPR::Syntax_Tags::X
