@@ -32,6 +32,7 @@ set(Libflpr_SRCS
   Syntax_Tags.cc
   Token_Text.cc
   TT_Stream.cc
+  astruct.cc
   parse_stmt.cc
   scan_fort.l
   utils.cc
@@ -64,6 +65,7 @@ set(flpr_headers
   TT_Stream.hh
   Token_Text.hh
   Tree.hh
+  astruct.hh
   flpr.hh
   parse_stmt.hh
   utils.hh
