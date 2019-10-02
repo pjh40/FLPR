@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     std::cerr << "Usage: flpr_interface <fortran file>" << std::endl;
     return 1;
   }
-
+  
   std::string const filename {argv[1]};
   FLPR_Interface::Interface_Action interface;
   do_file(filename, FLPR::file_type_from_extension(filename), interface);
@@ -107,6 +107,14 @@ bool Interface_Action::operator()(File &file, Cursor c,
     break;
   case TAG(SG_FUNCTION_STMT):
     {
+      std::optional<FLPR::AST::Function_Stmt> ast =
+        FLPR::AST::Function_Stmt::ingest(stmt_cursor);
+      assert(ast.has_value());
+      std::cout << "FUNCTION " << ast->name->token_range.front() << ": ";
+      for(auto c : ast->dummy_arg_name_list) {
+        std::cout << c->token_range.front() << ' ';
+      }
+      std::cout << '\n';
     }
     break;
   default:
