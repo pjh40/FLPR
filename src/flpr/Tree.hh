@@ -314,6 +314,8 @@ public:
   }
   //! Return true if this TN_Cursor is associated with a Tree_Node
   constexpr operator bool() const noexcept { return assoc_; }
+  constexpr bool associated() const noexcept { return assoc_; };
+
   //! Unassociate from any Tree_Node
   constexpr void clear() noexcept { assoc_ = false; }
 
@@ -457,6 +459,8 @@ public:
   }
   //! Return true if this TN_Const_Cursor is associated with a Tree_Node
   constexpr operator bool() const noexcept { return assoc_; }
+  constexpr bool associated() const noexcept { return assoc_; };
+  
   //! Unassociate from any Tree_Node
   constexpr void clear() noexcept { assoc_ = false; }
 
