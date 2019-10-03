@@ -60,7 +60,8 @@ struct Suffix {
      proc-language-binding-spec exists (proc_language_binding_spec.has_value()),
      and when that spec has a name
      proc_language_binding_spec->name.associated()) */
-  std::optional<Language_Binding_Spec> proc_language_binding_spec; 
+  std::optional<Language_Binding_Spec> proc_language_binding_spec;
+  INGEST(Suffix);
 };
 
 struct Function_Stmt {
