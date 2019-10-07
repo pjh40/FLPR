@@ -135,6 +135,15 @@ bool Interface_Action::operator()(File &file, Cursor c,
   std::vector<std::string> dummy_names;
   switch (stmt_syntag) {
   case TAG(SG_SUBROUTINE_STMT): {
+    auto ast = FLPR::AST::Subroutine_Stmt::ingest(stmt_cursor);
+    assert(ast.has_value());
+    for (auto c : ast->dummy_arg_list) {
+      assert(TAG(SG_DUMMY_ARG) == c->syntag);
+      c.down();
+      if (FLPR::Syntax_Tags::is_name(c->syntag)) {
+        dummy_names.push_back(c->token_range.front().text());
+      }
+    }
   } break;
   case TAG(SG_FUNCTION_STMT): {
     std::optional<FLPR::AST::Function_Stmt> ast =
