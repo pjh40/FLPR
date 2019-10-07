@@ -133,6 +133,41 @@ INGEST_DEF(Prefix) {
   return std::optional<Prefix>{};
 }
 
+INGEST_DEF(Subroutine_Stmt) {
+  if(ROOT_TAG_IS(SG_SUBROUTINE_STMT) && root.has_down()) {
+    Subroutine_Stmt ast;
+    root.down();
+    ast.prefix = Prefix::ingest(root);
+    if(ROOT_TAG_IS(SG_PREFIX)) {
+      root.next();
+    }
+    EXPECT_TAG(KW_SUBROUTINE);
+    root.next();
+    EXPECT_TAG(TK_NAME);
+    ast.name = root;
+    if(root.has_next()) {
+      root.next();
+      if(ROOT_TAG_IS(TK_PARENL)) root.next();
+      if(ROOT_TAG_IS(SG_DUMMY_ARG_LIST)) {
+        root.down();
+        do {
+          ast.dummy_arg_list.push_back(root);
+        } while(root.try_next(2));
+        root.up();
+        root.next();
+      }
+      EXPECT_TAG(TK_PARENR);
+      if (root.has_next()) {
+        root.next();
+        EXPECT_TAG(SG_PROC_LANGUAGE_BINDING_SPEC);
+        ast.proc_language_binding_spec = Language_Binding_Spec::ingest(root);
+      }
+    }
+    return std::optional<Subroutine_Stmt>{ast};
+  }
+  return std::optional<Subroutine_Stmt>{};
+}
+
 INGEST_DEF(Suffix) {
   if (ROOT_TAG_IS(SG_SUFFIX) && root.has_down()) {
     Suffix ast;

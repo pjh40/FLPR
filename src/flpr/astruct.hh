@@ -72,6 +72,14 @@ struct Function_Stmt {
   INGEST(Function_Stmt);
 };
 
+struct Subroutine_Stmt {
+  std::optional<Prefix> prefix;
+  st_ref name;
+  std::vector<st_ref> dummy_arg_list;
+  std::optional<Language_Binding_Spec> proc_language_binding_spec;
+  INGEST(Subroutine_Stmt);
+};
+
 }
 }
 #undef TAG
