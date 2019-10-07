@@ -53,6 +53,11 @@ public:
   explicit Parsed_File(std::istream &is, std::string const &stream_name,
                        File_Type stream_type = File_Type::UNKNOWN);
 
+  //! Read and scan from a buffer of raw text strings
+  explicit Parsed_File(typename Logical_File::Line_Buf const &line_buffer,
+                       std::string const &buffer_name,
+                       File_Type file_type = File_Type::UNKNOWN);
+
   Parsed_File() = default;
   Parsed_File(Parsed_File &&) = default;
   Parsed_File(Parsed_File const &) = delete;
@@ -149,6 +154,16 @@ Parsed_File<PG_NODE_DATA>::Parsed_File(std::istream &is,
                                        File_Type stream_type)
     : from_stream_{true} {
   if (logical_file_.read_and_scan(is, stream_name, stream_type)) {
+    bad_state_ = false;
+  }
+}
+
+template <typename PG_NODE_DATA>
+Parsed_File<PG_NODE_DATA>::Parsed_File(
+    typename Logical_File::Line_Buf const &line_buffer,
+    std::string const &buffer_name, File_Type file_type)
+    : from_stream_{true} {
+  if (logical_file_.scan(line_buffer, buffer_name, file_type)) {
     bad_state_ = false;
   }
 }
