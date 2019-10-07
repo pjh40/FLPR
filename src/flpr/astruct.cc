@@ -61,7 +61,12 @@ INGEST_DEF(Function_Stmt) {
         } while(root.try_next(2));
         root.up();
         root.next();
-        EXPECT_TAG(TK_PARENR);
+      }
+      EXPECT_TAG(TK_PARENR);
+      if (root.has_next()) {
+        root.next();
+        EXPECT_TAG(SG_SUFFIX);
+        ast.suffix = Suffix::ingest(root);
       }
     }
     return std::optional<Function_Stmt>{ast};
@@ -145,6 +150,11 @@ INGEST_DEF(Suffix) {
         root.down();
         EXPECT_TAG(SG_LANGUAGE_BINDING_SPEC);
         ast.proc_language_binding_spec = Language_Binding_Spec::ingest(root);
+      }
+      else {
+        std::cerr << "Unexpected tag: " << Syntax_Tags::label(root->syntag)
+                  << std::endl;
+        assert(0);
       }
     } while(root.try_next());
     return std::optional<Suffix>{ast};
