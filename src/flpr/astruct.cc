@@ -28,10 +28,12 @@ INGEST_DEF(Declaration_Type_Spec) {
     root.down();
     if(ROOT_TAG_IS(SG_INTRINSIC_TYPE_SPEC)) {
       auto its = Intrinsic_Type_Spec::ingest(root);
-      ast.v.emplace<0>(std::move(its.value()));
+      assert(its.has_value());
+      ast.v.emplace<0>(std::move(*its));
     } else {
       auto tcs = Type_Class_Spec::ingest(root);
-      ast.v.emplace<1>(std::move(tcs.value()));
+      assert(tcs.has_value());
+      ast.v.emplace<1>(std::move(*tcs));
     }
     return std::optional<Declaration_Type_Spec>{ast};
   }
