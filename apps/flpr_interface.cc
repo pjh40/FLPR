@@ -140,11 +140,15 @@ bool Interface_Action::operator()(File &file, Cursor c,
     std::optional<FLPR::AST::Function_Stmt> ast =
         FLPR::AST::Function_Stmt::ingest(stmt_cursor);
     assert(ast.has_value());
-    std::cout << "FUNCTION " << ast->name->token_range.front() << ": ";
     for (auto c : ast->dummy_arg_name_list) {
-      std::cout << c->token_range.front() << ' ';
+      dummy_names.push_back(c->token_range.front().text());
     }
-    std::cout << '\n';
+    if (ast->suffix.has_value()) {
+      if (ast->suffix->result_name) {
+        dummy_names.push_back(
+            ast->suffix->result_name->token_range.front().text());
+      }
+    }
   } break;
   default:
     std::cerr << "Got unexpected procedure statement of "
