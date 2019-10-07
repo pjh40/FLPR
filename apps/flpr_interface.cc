@@ -41,18 +41,23 @@ public:
   }
   void append_line(std::string const &text) { output_buf_.push_back(text); }
   void append_line(std::string &&text) { output_buf_.emplace_back(text); }
+  void append_line(FLPR::LL_Stmt const &stmt) {
+    std::ostringstream str;
+    FLPR::render(str, stmt.cbegin(), stmt.cend());
+    output_buf_.emplace_back(str.str());
+  }
 
   constexpr Line_Buf const &buf() const { return output_buf_; }
 
   bool operator()(File &file, Cursor c, bool const internal_procedure,
-                  bool const module_procedure) const;
+                  bool const module_procedure);
 
 private:
   Line_Buf output_buf_;
 };
 
 bool do_file(std::string const &filename, FLPR::File_Type file_type,
-             Interface_Action const &action);
+             Interface_Action &action);
 
 } // namespace FLPR_Interface
 
@@ -92,7 +97,7 @@ namespace FLPR_Interface {
 /*--------------------------------------------------------------------------*/
 
 bool do_file(std::string const &filename, FLPR::File_Type file_type,
-             Interface_Action const &visit_action) {
+             Interface_Action &visit_action) {
 
   File file(filename, file_type);
   if (!file)
@@ -107,7 +112,7 @@ bool do_file(std::string const &filename, FLPR::File_Type file_type,
 
 bool Interface_Action::operator()(File &file, Cursor c,
                                   bool const internal_procedure,
-                                  bool const module_procedure) const {
+                                  bool const module_procedure) {
   if (internal_procedure || module_procedure) {
     return false;
   }
@@ -149,6 +154,9 @@ bool Interface_Action::operator()(File &file, Cursor c,
     std::cout << ' ' << n;
   }
   std::cout << '\n';
+
+  append_line(*proc_stmt);
+  append_line(*(proc.cbegin(Procedure::PROC_END)));
 
   return true;
 }
