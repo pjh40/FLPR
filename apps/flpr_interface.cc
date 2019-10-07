@@ -143,11 +143,11 @@ bool Interface_Action::operator()(File &file, Cursor c,
     for (auto c : ast->dummy_arg_name_list) {
       dummy_names.push_back(c->token_range.front().text());
     }
-    if (ast->suffix.has_value()) {
-      if (ast->suffix->result_name) {
-        dummy_names.push_back(
-            ast->suffix->result_name->token_range.front().text());
-      }
+    if (ast->suffix.has_value() && ast->suffix->result_name) {
+      dummy_names.push_back(
+          ast->suffix->result_name->token_range.front().text());
+    } else {
+      dummy_names.push_back(ast->name->token_range.front().text());
     }
   } break;
   default:
