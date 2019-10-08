@@ -30,6 +30,7 @@ using Stmt_Range = typename File::Parse_Tree::value::Stmt_Range;
 using Stmt_Iter = typename Stmt_Range::iterator;
 using Stmt_Const_Iter = typename Stmt_Range::const_iterator;
 using Procedure = FLPR::Procedure<File>;
+using Prgm_Const_Cursor = typename Procedure::Prgm_Const_Cursor;
 
 class Interface_Action {
 public:
@@ -53,6 +54,9 @@ public:
                   bool const module_procedure);
 
 private:
+
+  bool process_spec_(Prgm_Const_Cursor pc);
+  
   Line_Buf output_buf_;
 };
 
@@ -169,8 +173,54 @@ bool Interface_Action::operator()(File &file, Cursor c,
   std::cout << '\n';
 
   append_line(*proc_stmt);
+  for(auto u = proc.cbegin(Procedure::USES);
+      u != proc.cend(Procedure::USES); u++) {
+    append_line(*u);
+  }
+  for(auto i = proc.cbegin(Procedure::IMPLICITS);
+      i != proc.cend(Procedure::IMPLICITS); i++) {
+    append_line(*i);
+  }
+
+  if (proc.has_region(Procedure::DECLS)) {
+    bool changed = false;
+    auto pc = proc.range_cursor(Procedure::DECLS);
+    if (pc) {
+      pc.down();
+      do {
+        if(TAG(PG_DECLARATION_CONSTRUCT) != pc->syntag()) continue;
+        pc.down();
+        if (TAG(PG_SPECIFICATION_CONSTRUCT) == pc->syntag()) {
+          pc.down();
+          changed |= process_spec_(pc);
+          pc.up();
+        }
+        pc.up();
+      } while(pc.try_next());
+    }
+  }
+    
   append_line(*(proc.cbegin(Procedure::PROC_END)));
 
   return true;
 }
+
+
+bool Interface_Action::process_spec_(Prgm_Const_Cursor pc) {
+
+  switch(pc->syntag()) {
+  case TAG(SG_TYPE_DECLARATION_STMT):
+    break;
+  case TAG(SG_OTHER_SPECIFICATION_STMT):
+    break;
+  default:
+    std::cerr << "Skipping "
+              << FLPR::Syntax_Tags::label(pc->syntag())
+              << " in specification-part\n";
+  }
+    
+  
+  return false;
+}
+
 } // namespace FLPR_Interface
