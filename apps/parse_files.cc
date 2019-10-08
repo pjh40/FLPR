@@ -29,26 +29,27 @@ struct File {
   Parse_Tree parse_tree;
 };
 
-bool read_file(std::string const &filename, std::vector<File> &files);
-bool parse_cmd_line(std::vector<std::string> &filenames, int argc,
-                    char *const argv[]);
+bool read_file(std::string const &filename, bool print_tree);
+bool parse_cmd_line(std::vector<std::string> &filenames, bool &print_tree,
+                    int argc, char *const argv[]);
 
 int main(int argc, char *const argv[]) {
   std::vector<std::string> filenames;
-  if (!parse_cmd_line(filenames, argc, argv)) {
+  bool print_tree;
+  if (!parse_cmd_line(filenames, print_tree, argc, argv)) {
     std::cerr << "exiting on error." << std::endl;
     return 1;
   }
 
   std::vector<File> files;
   for (auto const &f : filenames) {
-    read_file(f, files);
+    read_file(f, print_tree);
   }
   std::cout << "done." << std::endl;
   return 0;
 }
 
-bool read_file(std::string const &filename, std::vector<File> &files) {
+bool read_file(std::string const &filename, bool print_tree) {
   File f;
   std::cout << "Processing: '" << filename << "'"
             << "\n\tscanning..." << std::endl;
@@ -72,6 +73,8 @@ bool read_file(std::string const &filename, std::vector<File> &files) {
   std::cout << "\troot rule \"" << *c << "\" has " << c.node().num_branches()
             << " branches. " << '\n';
 
+  if (print_tree) std::cout << result.parse_tree;
+  
   f.parse_tree.swap(result.parse_tree);
 
   return true;
@@ -94,14 +97,18 @@ bool file_list_from_file(std::vector<std::string> &filenames,
   return filenames.size() > orig_size;
 }
 
-bool parse_cmd_line(std::vector<std::string> &filenames, int argc,
-                    char *const argv[]) {
+bool parse_cmd_line(std::vector<std::string> &filenames, bool &print_tree,
+                    int argc, char *const argv[]) {
   int ch;
-  while ((ch = getopt(argc, argv, "f:")) != -1) {
+  print_tree = false;
+  while ((ch = getopt(argc, argv, "pf:")) != -1) {
     switch (ch) {
     case 'f':
       if (!file_list_from_file(filenames, optarg))
         return false;
+      break;
+    case 'p':
+      print_tree = true;
       break;
     default:
       std::cerr << "unknown option" << std::endl;
