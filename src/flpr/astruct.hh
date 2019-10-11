@@ -18,6 +18,11 @@ using st_ref = FLPR::Stmt::Stmt_Tree::const_cursor_t;
 #define INGEST(term) \
   static std::optional<term> ingest(st_ref root)
 
+struct Attr_Spec {
+  st_ref attr_spec;
+  INGEST(Attr_Spec);
+};
+
 struct Intrinsic_Type_Spec {
   /* The node of the type keyword (e.g. FLOAT) */
   st_ref type;
@@ -37,6 +42,19 @@ struct Type_Class_Spec {
 struct Declaration_Type_Spec {
   std::variant<Intrinsic_Type_Spec, Type_Class_Spec> v;
   INGEST(Declaration_Type_Spec);
+};
+
+struct Entity_Decl {
+  st_ref name;
+  /* If set, the root of an array-spec */
+  st_ref array_spec;
+  /* If set, the root of the coarray-spec */
+  st_ref coarray_spec;
+  /* If set, the root of the char-length */
+  st_ref char_length;
+  /* If set, the root of the initialization */
+  st_ref initialization;
+  INGEST(Entity_Decl);
 };
 
 struct Language_Binding_Spec {
@@ -78,6 +96,13 @@ struct Subroutine_Stmt {
   std::vector<st_ref> dummy_arg_list;
   std::optional<Language_Binding_Spec> proc_language_binding_spec;
   INGEST(Subroutine_Stmt);
+};
+
+struct Type_Declaration_Stmt {
+  Declaration_Type_Spec declaration_type_spec;
+  std::vector<Attr_Spec> attr_spec_list;
+  std::vector<Entity_Decl> entity_decl_list;
+  INGEST(Type_Declaration_Stmt);
 };
 
 }

@@ -18,9 +18,21 @@
     assert (root->syntag == (Syntax_Tags::X)); \
   }
 
+#define EXPECT_OPTIONAL(LHS, RHS) \
+  { auto tmp_optional = RHS; assert(tmp_optional.has_value()); LHS = std::move(*tmp_optional); }
 
 namespace FLPR {
 namespace AST {
+
+INGEST_DEF(Attr_Spec) {
+  if (ROOT_TAG_IS(SG_ATTR_SPEC) && root.has_down()) {
+    Attr_Spec ast;
+    ast.attr_spec = root;  /* FIXME: true, but lazy. */
+    return std::optional<Attr_Spec>{ast};
+  }
+  return std::optional<Attr_Spec>{};
+}
+
 
 INGEST_DEF(Declaration_Type_Spec) {
   if(ROOT_TAG_IS(SG_DECLARATION_TYPE_SPEC) && root.has_down()) {
@@ -40,6 +52,43 @@ INGEST_DEF(Declaration_Type_Spec) {
   return std::optional<Declaration_Type_Spec>{};
 }
 
+INGEST_DEF(Entity_Decl) {
+  std::cout << "Entity_Decl ingest on " << *root << '\n';
+  if (ROOT_TAG_IS(SG_ENTITY_DECL) && root.has_down()) {
+    Entity_Decl ast;
+    root.down();
+    EXPECT_NAME;
+    ast.name = root;
+    if(!root.has_next()) return std::optional<Entity_Decl>{ast};
+    root.next();
+    if(ROOT_TAG_IS(TK_PARENL)) {
+      root.next();
+      EXPECT_TAG(SG_ARRAY_SPEC);
+      ast.array_spec = root;
+      root.next();
+      EXPECT_TAG(TK_PARENR);
+      if(!root.has_next()) return std::optional<Entity_Decl>{ast};
+    }
+    if(ROOT_TAG_IS(TK_BRACKETL)) {
+      root.next();
+      EXPECT_TAG(SG_COARRAY_SPEC);
+      ast.coarray_spec = root;
+      root.next();
+      EXPECT_TAG(TK_BRACKETR);
+      if(!root.has_next()) return std::optional<Entity_Decl>{ast};
+    }
+    if(ROOT_TAG_IS(TK_ASTERISK)) {
+      root.next();
+      EXPECT_TAG(SG_CHAR_LENGTH);
+      if(!root.has_next()) return std::optional<Entity_Decl>{ast};
+    }
+    EXPECT_TAG(SG_INITIALIZATION);
+    ast.initialization = root;
+    return std::optional<Entity_Decl>{ast};
+  }
+  return std::optional<Entity_Decl>{};
+}
+
 INGEST_DEF(Function_Stmt) {
   if(ROOT_TAG_IS(SG_FUNCTION_STMT) && root.has_down()) {
     Function_Stmt ast;
@@ -50,7 +99,7 @@ INGEST_DEF(Function_Stmt) {
     }
     EXPECT_TAG(KW_FUNCTION);
     root.next();
-    EXPECT_TAG(TK_NAME);
+    EXPECT_NAME;
     ast.name = root;
     if(root.has_next()) {
       root.next();
@@ -210,6 +259,36 @@ INGEST_DEF(Type_Class_Spec) {
     return std::optional<Type_Class_Spec>{ast};
   }
   return std::optional<Type_Class_Spec>{};
+}
+
+INGEST_DEF(Type_Declaration_Stmt) {
+  if (ROOT_TAG_IS(SG_TYPE_DECLARATION_STMT) && root.has_down()) {
+    Type_Declaration_Stmt ast;
+    root.down();
+    EXPECT_OPTIONAL(ast.declaration_type_spec,
+                    Declaration_Type_Spec::ingest(root));
+    root.next();
+    while(ROOT_TAG_IS(TK_COMMA)) {
+      root.next();
+      auto tmp_optional = Attr_Spec::ingest(root);
+      assert(tmp_optional.has_value());
+      ast.attr_spec_list.emplace_back(std::move(*tmp_optional));
+      root.next();
+    }
+    if(ROOT_TAG_IS(TK_DBL_COLON)) root.next();
+    EXPECT_TAG(SG_ENTITY_DECL_LIST);
+    root.down();
+    do {
+      if(ROOT_TAG_IS(TK_COMMA)) root.next();
+      std::cout << *root;
+      EXPECT_TAG(SG_ENTITY_DECL);
+      auto tmp_optional = Entity_Decl::ingest(root);
+      assert(tmp_optional.has_value());
+      ast.entity_decl_list.emplace_back(std::move(*tmp_optional));
+    } while(root.try_next());
+    return std::optional<Type_Declaration_Stmt>{ast};
+  }
+  return std::optional<Type_Declaration_Stmt>{};
 }
 
 }
