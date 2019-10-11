@@ -206,16 +206,25 @@ bool Interface_Action::operator()(File &file, Cursor c,
 }
 
 
-bool Interface_Action::process_spec_(Prgm_Const_Cursor pc) {
+bool Interface_Action::process_spec_(Prgm_Const_Cursor prgm_cursor) {
 
-  switch(pc->syntag()) {
+  switch(prgm_cursor->syntag()) {
   case TAG(SG_TYPE_DECLARATION_STMT):
+    {
+      assert(prgm_cursor->is_stmt());
+      auto stmt_cursor = prgm_cursor->stmt_tree().ccursor();
+      auto ast = FLPR::AST::Type_Declaration_Stmt::ingest(stmt_cursor);
+      assert(ast.has_value());
+      for(auto const & ed : ast->entity_decl_list) {
+        std::cout << "VAR: " << ed.name->token_range.front().text() << '\n';
+      }
+    }
     break;
   case TAG(SG_OTHER_SPECIFICATION_STMT):
     break;
   default:
     std::cerr << "Skipping "
-              << FLPR::Syntax_Tags::label(pc->syntag())
+              << FLPR::Syntax_Tags::label(prgm_cursor->syntag())
               << " in specification-part\n";
   }
     
