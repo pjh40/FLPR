@@ -53,7 +53,6 @@ INGEST_DEF(Declaration_Type_Spec) {
 }
 
 INGEST_DEF(Entity_Decl) {
-  std::cout << "Entity_Decl ingest on " << *root << '\n';
   if (ROOT_TAG_IS(SG_ENTITY_DECL) && root.has_down()) {
     Entity_Decl ast;
     root.down();
@@ -280,7 +279,6 @@ INGEST_DEF(Type_Declaration_Stmt) {
     root.down();
     do {
       if(ROOT_TAG_IS(TK_COMMA)) root.next();
-      std::cout << *root;
       EXPECT_TAG(SG_ENTITY_DECL);
       auto tmp_optional = Entity_Decl::ingest(root);
       assert(tmp_optional.has_value());
