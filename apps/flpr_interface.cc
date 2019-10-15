@@ -18,8 +18,8 @@
 #include "flpr/flpr.hh"
 #include <iostream>
 #include <sstream>
-#include <unordered_set>
 #include <string>
+#include <unordered_set>
 
 #define TAG(X) FLPR::Syntax_Tags::X
 
@@ -38,6 +38,7 @@ class Interface_Action {
 public:
   using Line_Buf = FLPR::Logical_File::Line_Buf;
   using Dummies = std::unordered_set<std::string>;
+
 public:
   void append_line(char const *const text) {
     output_buf_.emplace_back(std::string{text});
@@ -50,16 +51,15 @@ public:
     output_buf_.emplace_back(str.str());
   }
   void append_blank_line() { output_buf_.emplace_back(std::string{}); }
-  
+
   constexpr Line_Buf const &buf() const { return output_buf_; }
 
   bool operator()(File &file, Cursor c, bool const internal_procedure,
                   bool const module_procedure);
 
 private:
-
   bool process_spec_(Prgm_Const_Cursor pc, Dummies const &dummy_args);
-  
+
   Line_Buf output_buf_;
 };
 
@@ -160,8 +160,7 @@ bool Interface_Action::operator()(File &file, Cursor c,
       dummy_names.insert(c->token_range.front().text());
     }
     if (ast->suffix.has_value() && ast->suffix->result_name) {
-      dummy_names.insert(
-          ast->suffix->result_name->token_range.front().text());
+      dummy_names.insert(ast->suffix->result_name->token_range.front().text());
     } else {
       dummy_names.insert(ast->name->token_range.front().text());
     }
@@ -176,12 +175,12 @@ bool Interface_Action::operator()(File &file, Cursor c,
   std::cout << '\n';
 
   append_line(*proc_stmt);
-  for(auto u = proc.cbegin(Procedure::USES);
-      u != proc.cend(Procedure::USES); u++) {
+  for (auto u = proc.cbegin(Procedure::USES); u != proc.cend(Procedure::USES);
+       u++) {
     append_line(*u);
   }
-  for(auto i = proc.cbegin(Procedure::IMPLICITS);
-      i != proc.cend(Procedure::IMPLICITS); i++) {
+  for (auto i = proc.cbegin(Procedure::IMPLICITS);
+       i != proc.cend(Procedure::IMPLICITS); i++) {
     append_line(*i);
   }
 
@@ -191,7 +190,8 @@ bool Interface_Action::operator()(File &file, Cursor c,
     if (pc) {
       pc.down();
       do {
-        if(TAG(PG_DECLARATION_CONSTRUCT) != pc->syntag()) continue;
+        if (TAG(PG_DECLARATION_CONSTRUCT) != pc->syntag())
+          continue;
         pc.down();
         if (TAG(PG_SPECIFICATION_CONSTRUCT) == pc->syntag()) {
           pc.down();
@@ -199,61 +199,63 @@ bool Interface_Action::operator()(File &file, Cursor c,
           pc.up();
         }
         pc.up();
-      } while(pc.try_next());
+      } while (pc.try_next());
     }
   }
-    
+
   append_line(*(proc.cbegin(Procedure::PROC_END)));
   append_blank_line();
-  
+
   return true;
 }
-
 
 bool Interface_Action::process_spec_(Prgm_Const_Cursor prgm_cursor,
                                      Dummies const &dummy_args) {
 
-  switch(prgm_cursor->syntag()) {
-  case TAG(SG_TYPE_DECLARATION_STMT):
-    {
-      assert(prgm_cursor->is_stmt());
-      auto stmt_cursor = prgm_cursor->stmt_tree().ccursor();
-      auto ast = FLPR::AST::Type_Declaration_Stmt::ingest(stmt_cursor);
-      assert(ast.has_value());
-      int dummy_found = 0;
+  switch (prgm_cursor->syntag()) {
+  case TAG(PG_DERIVED_TYPE_DEF): {
+    /* Copy derived type definitions out in case they appear in dummy parameter
+       declarations */
+    for (auto const &st : prgm_cursor->stmt_range()) {
       std::ostringstream output_line;
-      
-      for(auto const & ed : ast->entity_decl_list) {
-        auto const &var_name = ed.name->token_range.front().text();
-        if(dummy_args.count(var_name)) {
-          if(!dummy_found) {
-            ast->type_decl_attr_seq.self->token_range.render(output_line);
-            output_line << ' ';
-          } else {
-            output_line << ", ";
-          }
-          auto c = ed.name;
-          c.up();
-          c->token_range.render(output_line);
-          dummy_found += 1;
+      st.render(output_line);
+      append_line(output_line.str());
+    }
+  } break;
+  case TAG(SG_TYPE_DECLARATION_STMT): {
+    assert(prgm_cursor->is_stmt());
+    auto stmt_cursor = prgm_cursor->stmt_tree().ccursor();
+    auto ast = FLPR::AST::Type_Declaration_Stmt::ingest(stmt_cursor);
+    assert(ast.has_value());
+    int dummy_found = 0;
+    std::ostringstream output_line;
+
+    for (auto const &ed : ast->entity_decl_list) {
+      auto const &var_name = ed.name->token_range.front().text();
+      if (dummy_args.count(var_name)) {
+        if (!dummy_found) {
+          ast->type_decl_attr_seq.self->token_range.render(output_line);
+          output_line << ' ';
         } else {
-          std::cout << "VAR: " << var_name << '\n';
+          output_line << ", ";
         }
-      }
-      if (dummy_found) {
-        append_line(output_line.str());
+        auto c = ed.name;
+        c.up();
+        c->token_range.render(output_line);
+        dummy_found += 1;
       }
     }
-    break;
+    if (dummy_found) {
+      append_line(output_line.str());
+    }
+  } break;
   case TAG(SG_OTHER_SPECIFICATION_STMT):
     break;
   default:
-    std::cerr << "Skipping "
-              << FLPR::Syntax_Tags::label(prgm_cursor->syntag())
+    std::cerr << "Skipping " << FLPR::Syntax_Tags::label(prgm_cursor->syntag())
               << " in specification-part\n";
   }
-    
-  
+
   return false;
 }
 
