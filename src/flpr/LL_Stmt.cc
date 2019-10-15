@@ -101,7 +101,7 @@ std::ostream &LL_Stmt::print_me(std::ostream &os,
     }
 
     os << line_label << linenum() << ": ";
-    render(os, cbegin(), cend());
+    ::FLPR::render(os, cbegin(), cend());
   }
   return os;
 }

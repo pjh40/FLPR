@@ -78,6 +78,9 @@ public:
   }
 
   virtual std::ostream &print(std::ostream &os) const;
+  void render(std::ostream &os) const {
+    ::FLPR::render(os, SL_Range::cbegin(), SL_Range::cend());
+  }
 
 protected:
   LL_IT line_ref_;
