@@ -46,6 +46,7 @@ public:
 
   constexpr int syntag() const { return syntag_; }
   Stmt_Range &stmt_range() noexcept { return stmt_range_; }
+  Stmt_Range const &stmt_range() const noexcept { return stmt_range_; }
 
   constexpr bool is_stmt() const noexcept { return stmt_data_.has_value(); }
   Stmt_Tree &stmt_tree() { return stmt_data_->stmt_tree(); }
