@@ -98,9 +98,15 @@ struct Subroutine_Stmt {
   INGEST(Subroutine_Stmt);
 };
 
-struct Type_Declaration_Stmt {
+struct Type_Decl_Attr_Seq {
+  st_ref self;
   Declaration_Type_Spec declaration_type_spec;
   std::vector<Attr_Spec> attr_spec_list;
+  INGEST(Type_Decl_Attr_Seq);
+};  
+
+struct Type_Declaration_Stmt {
+  Type_Decl_Attr_Seq type_decl_attr_seq;
   std::vector<Entity_Decl> entity_decl_list;
   INGEST(Type_Declaration_Stmt);
 };

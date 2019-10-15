@@ -128,10 +128,21 @@ INGEST_DEF(Intrinsic_Type_Spec) {
   if (ROOT_TAG_IS(SG_INTRINSIC_TYPE_SPEC) && root.has_down()) {
     Intrinsic_Type_Spec ast;
     root.down();
+    if (ROOT_TAG_IS(SG_INTEGER_TYPE_SPEC)) {
+      root.down();
+    }
+    bool expect_char_selector{false};
+    if (ROOT_TAG_IS(KW_CHARACTER)) {
+      expect_char_selector = true;
+    }
     ast.type = root;
     if(root.has_next()) {
       root.next();
-      EXPECT_TAG(SG_KIND_SELECTOR);
+      if(expect_char_selector) {
+        EXPECT_TAG(SG_CHAR_SELECTOR);
+      } else {
+        EXPECT_TAG(SG_KIND_SELECTOR);
+      }
       ast.kind = root;
     }
     return std::optional<Intrinsic_Type_Spec>{ast};
@@ -260,21 +271,35 @@ INGEST_DEF(Type_Class_Spec) {
   return std::optional<Type_Class_Spec>{};
 }
 
+INGEST_DEF(Type_Decl_Attr_Seq) {
+  if (ROOT_TAG_IS(SG_TYPE_DECL_ATTR_SEQ) && root.has_down()) {
+    Type_Decl_Attr_Seq ast;
+    ast.self = root;
+    root.down();
+    EXPECT_OPTIONAL(ast.declaration_type_spec,
+                    Declaration_Type_Spec::ingest(root));
+    if(root.has_next()) {
+      root.next();
+      while(ROOT_TAG_IS(TK_COMMA) && root.has_next()) {
+        root.next();
+        auto tmp_optional = Attr_Spec::ingest(root);
+        assert(tmp_optional.has_value());
+        ast.attr_spec_list.emplace_back(std::move(*tmp_optional));
+        root.next();
+      }
+    }
+    return std::optional<Type_Decl_Attr_Seq>{ast};
+  }
+  return std::optional<Type_Decl_Attr_Seq>{};
+}
+
 INGEST_DEF(Type_Declaration_Stmt) {
   if (ROOT_TAG_IS(SG_TYPE_DECLARATION_STMT) && root.has_down()) {
     Type_Declaration_Stmt ast;
     root.down();
-    EXPECT_OPTIONAL(ast.declaration_type_spec,
-                    Declaration_Type_Spec::ingest(root));
+    EXPECT_OPTIONAL(ast.type_decl_attr_seq,
+                    Type_Decl_Attr_Seq::ingest(root));
     root.next();
-    while(ROOT_TAG_IS(TK_COMMA)) {
-      root.next();
-      auto tmp_optional = Attr_Spec::ingest(root);
-      assert(tmp_optional.has_value());
-      ast.attr_spec_list.emplace_back(std::move(*tmp_optional));
-      root.next();
-    }
-    if(ROOT_TAG_IS(TK_DBL_COLON)) root.next();
     EXPECT_TAG(SG_ENTITY_DECL_LIST);
     root.down();
     do {
