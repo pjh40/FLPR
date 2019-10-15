@@ -218,13 +218,36 @@ bool Interface_Action::process_spec_(Prgm_Const_Cursor prgm_cursor,
       auto stmt_cursor = prgm_cursor->stmt_tree().ccursor();
       auto ast = FLPR::AST::Type_Declaration_Stmt::ingest(stmt_cursor);
       assert(ast.has_value());
+      int dummy_found = 0;
+      std::ostringstream output_line;
       for(auto const & ed : ast->entity_decl_list) {
         auto const &var_name = ed.name->token_range.front().text();
         if(dummy_args.count(var_name)) {
-          std::cout << "Dummy: " << var_name << '\n';
+          if(!dummy_found) {
+            auto c = stmt_cursor;
+            c.down();
+            c->token_range.render(output_line);
+            c.next();
+            while(TAG(TK_COMMA) == c->syntag) {
+              c->token_range.render(output_line);
+              c.next();
+              c->token_range.render(output_line);
+              c.next();
+            }
+            output_line << " :: ";
+          } else {
+            output_line << ", ";
+          }
+          auto c = ed.name;
+          c.up();
+          c->token_range.render(output_line);
+          dummy_found += 1;
         } else {
           std::cout << "VAR: " << var_name << '\n';
         }
+      }
+      if (dummy_found) {
+        append_line(output_line.str());
       }
     }
     break;
