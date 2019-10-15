@@ -209,6 +209,14 @@ bool Interface_Action::operator()(File &file, Cursor c,
   return true;
 }
 
+bool has_parameter_attrib(FLPR::AST::Type_Decl_Attr_Seq const &seq) {
+  for (auto const & as : seq.attr_spec_list) {
+    if (TAG(KW_PARAMETER) == as.attr_spec->syntag) return true;
+  }
+  return false;
+}
+
+
 bool Interface_Action::process_spec_(Prgm_Const_Cursor prgm_cursor,
                                      Dummies const &dummy_args) {
 
@@ -222,13 +230,28 @@ bool Interface_Action::process_spec_(Prgm_Const_Cursor prgm_cursor,
       append_line(output_line.str());
     }
   } break;
+  case TAG(SG_PARAMETER_STMT): {
+    assert(prgm_cursor->is_stmt());
+    std::ostringstream output_line;
+    prgm_cursor->stmt_range().front().render(output_line);
+    append_line(output_line.str());
+  } break;
   case TAG(SG_TYPE_DECLARATION_STMT): {
     assert(prgm_cursor->is_stmt());
     auto stmt_cursor = prgm_cursor->stmt_tree().ccursor();
     auto ast = FLPR::AST::Type_Declaration_Stmt::ingest(stmt_cursor);
     assert(ast.has_value());
-    int dummy_found = 0;
+
     std::ostringstream output_line;
+    
+    if (has_parameter_attrib(ast->type_decl_attr_seq)) {
+      prgm_cursor->stmt_range().front().render(output_line);
+      append_line(output_line.str());
+      return true;
+    }
+
+    int dummy_found = 0;
+
 
     for (auto const &ed : ast->entity_decl_list) {
       auto const &var_name = ed.name->token_range.front().text();
