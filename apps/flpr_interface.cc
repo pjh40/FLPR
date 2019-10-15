@@ -49,7 +49,8 @@ public:
     FLPR::render(str, stmt.cbegin(), stmt.cend());
     output_buf_.emplace_back(str.str());
   }
-
+  void append_blank_line() { output_buf_.emplace_back(std::string{}); }
+  
   constexpr Line_Buf const &buf() const { return output_buf_; }
 
   bool operator()(File &file, Cursor c, bool const internal_procedure,
@@ -203,7 +204,8 @@ bool Interface_Action::operator()(File &file, Cursor c,
   }
     
   append_line(*(proc.cbegin(Procedure::PROC_END)));
-
+  append_blank_line();
+  
   return true;
 }
 
@@ -220,21 +222,13 @@ bool Interface_Action::process_spec_(Prgm_Const_Cursor prgm_cursor,
       assert(ast.has_value());
       int dummy_found = 0;
       std::ostringstream output_line;
+      
       for(auto const & ed : ast->entity_decl_list) {
         auto const &var_name = ed.name->token_range.front().text();
         if(dummy_args.count(var_name)) {
           if(!dummy_found) {
-            auto c = stmt_cursor;
-            c.down();
-            c->token_range.render(output_line);
-            c.next();
-            while(TAG(TK_COMMA) == c->syntag) {
-              c->token_range.render(output_line);
-              c.next();
-              c->token_range.render(output_line);
-              c.next();
-            }
-            output_line << " :: ";
+            ast->type_decl_attr_seq.self->token_range.render(output_line);
+            output_line << ' ';
           } else {
             output_line << ", ";
           }
