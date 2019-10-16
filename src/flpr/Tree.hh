@@ -460,7 +460,7 @@ public:
   //! Return true if this TN_Const_Cursor is associated with a Tree_Node
   constexpr operator bool() const noexcept { return assoc_; }
   constexpr bool associated() const noexcept { return assoc_; };
-  
+
   //! Unassociate from any Tree_Node
   constexpr void clear() noexcept { assoc_ = false; }
 
@@ -539,9 +539,13 @@ public:
     return *iter_;
   }
   //! Return a reference to the current Tree_Node DATA
-  [[nodiscard]] constexpr reference operator*() const noexcept { return *node(); }
+  [[nodiscard]] constexpr reference operator*() const noexcept {
+    return *node();
+  }
   //! Return a pointer to the current Tree_Node DATA
-  [[nodiscard]] constexpr pointer operator->() const noexcept { return &(*node()); }
+  [[nodiscard]] constexpr pointer operator->() const noexcept {
+    return &(*node());
+  }
   //! Return the current Tree_Node::node_list::iterator
   [[nodiscard]] constexpr iterator self() const noexcept {
     assert(assoc_);

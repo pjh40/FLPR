@@ -1,4 +1,4 @@
-/* -*- mode: C++; eval: (font-lock-mode 0); -*- */ 
+/* -*- mode: C++; eval: (font-lock-mode 0); -*- */
 /*
    Copyright (c) 2019, Triad National Security, LLC. All rights reserved.
 

@@ -210,12 +210,12 @@ bool Interface_Action::operator()(File &file, Cursor c,
 }
 
 bool has_parameter_attrib(FLPR::AST::Type_Decl_Attr_Seq const &seq) {
-  for (auto const & as : seq.attr_spec_list) {
-    if (TAG(KW_PARAMETER) == as.attr_spec->syntag) return true;
+  for (auto const &as : seq.attr_spec_list) {
+    if (TAG(KW_PARAMETER) == as.attr_spec->syntag)
+      return true;
   }
   return false;
 }
-
 
 bool Interface_Action::process_spec_(Prgm_Const_Cursor prgm_cursor,
                                      Dummies const &dummy_args) {
@@ -243,7 +243,7 @@ bool Interface_Action::process_spec_(Prgm_Const_Cursor prgm_cursor,
     assert(ast.has_value());
 
     std::ostringstream output_line;
-    
+
     if (has_parameter_attrib(ast->type_decl_attr_seq)) {
       prgm_cursor->stmt_range().front().render(output_line);
       append_line(output_line.str());
@@ -251,7 +251,6 @@ bool Interface_Action::process_spec_(Prgm_Const_Cursor prgm_cursor,
     }
 
     int dummy_found = 0;
-
 
     for (auto const &ed : ast->entity_decl_list) {
       auto const &var_name = ed.name->token_range.front().text();

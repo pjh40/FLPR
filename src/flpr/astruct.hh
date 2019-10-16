@@ -14,9 +14,7 @@ namespace AST {
 
 using st_ref = FLPR::Stmt::Stmt_Tree::const_cursor_t;
 
-
-#define INGEST(term) \
-  static std::optional<term> ingest(st_ref root)
+#define INGEST(term) static std::optional<term> ingest(st_ref root)
 
 struct Attr_Spec {
   st_ref attr_spec;
@@ -33,7 +31,7 @@ struct Intrinsic_Type_Spec {
 
 struct Type_Class_Spec {
   /* The TYPE or CLASS node */
-  st_ref type_or_class;  
+  st_ref type_or_class;
   /* The root of the intrinsic-type-spec or derived-type-spec */
   st_ref spec;
   INGEST(Type_Class_Spec);
@@ -65,7 +63,7 @@ struct Language_Binding_Spec {
 
 struct Prefix {
   /* All prefix-specs, apart from any declaration-type-spec */
-  std::vector<st_ref> prefix_spec_list; 
+  std::vector<st_ref> prefix_spec_list;
   std::optional<Declaration_Type_Spec> declaration_type_spec;
   INGEST(Prefix);
 };
@@ -103,7 +101,7 @@ struct Type_Decl_Attr_Seq {
   Declaration_Type_Spec declaration_type_spec;
   std::vector<Attr_Spec> attr_spec_list;
   INGEST(Type_Decl_Attr_Seq);
-};  
+};
 
 struct Type_Declaration_Stmt {
   Type_Decl_Attr_Seq type_decl_attr_seq;
@@ -111,8 +109,8 @@ struct Type_Declaration_Stmt {
   INGEST(Type_Declaration_Stmt);
 };
 
-}
-}
+} // namespace AST
+} // namespace FLPR
 #undef TAG
 
 #endif

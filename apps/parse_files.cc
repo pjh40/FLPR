@@ -73,8 +73,9 @@ bool read_file(std::string const &filename, bool print_tree) {
   std::cout << "\troot rule \"" << *c << "\" has " << c.node().num_branches()
             << " branches. " << '\n';
 
-  if (print_tree) std::cout << result.parse_tree;
-  
+  if (print_tree)
+    std::cout << result.parse_tree;
+
   f.parse_tree.swap(result.parse_tree);
 
   return true;
