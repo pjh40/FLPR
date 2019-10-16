@@ -27,6 +27,7 @@ namespace AST {
 INGEST_DEF(Attr_Spec) {
   if (ROOT_TAG_IS(SG_ATTR_SPEC) && root.has_down()) {
     Attr_Spec ast;
+    root.down();
     ast.attr_spec = root;  /* FIXME: true, but lazy. */
     return std::optional<Attr_Spec>{ast};
   }
