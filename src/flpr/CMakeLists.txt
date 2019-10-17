@@ -40,6 +40,7 @@ set(Libflpr_SRCS
   )
 
 set(flpr_headers
+  Entity_Info.hh
   File_Info.hh
   File_Line.hh
   Indent_Table.hh

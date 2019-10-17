@@ -16,6 +16,7 @@
 
 #include "flpr/astruct.hh"
 #include "flpr/flpr.hh"
+#include "flpr/Entity_Info.hh"
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -69,6 +70,9 @@ bool do_file(std::string const &filename, FLPR::File_Type file_type,
 } // namespace FLPR_Interface
 
 int main(int argc, char *argv[]) {
+
+  FLPR::Entity_Info ei;
+  
   if (argc != 2) {
     std::cerr << "Usage: flpr_interface <fortran file>" << std::endl;
     return 1;
