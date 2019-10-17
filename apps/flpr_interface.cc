@@ -169,10 +169,6 @@ bool Interface_Action::operator()(File &file, Cursor c,
     std::cerr << "Got unexpected procedure statement of "
               << FLPR::Syntax_Tags::label(stmt_syntag) << std::endl;
   }
-  for (auto const &n : dummy_names) {
-    std::cout << ' ' << n;
-  }
-  std::cout << '\n';
 
   append_line(*proc_stmt);
   for (auto u = proc.cbegin(Procedure::USES); u != proc.cend(Procedure::USES);
@@ -271,8 +267,10 @@ bool Interface_Action::process_spec_(Prgm_Const_Cursor prgm_cursor,
       append_line(output_line.str());
     }
   } break;
-  case TAG(SG_OTHER_SPECIFICATION_STMT):
-    break;
+  case TAG(SG_OTHER_SPECIFICATION_STMT): {
+    assert(prgm_cursor->is_stmt());
+    auto stmt_cursor = prgm_cursor->stmt_tree().ccursor();
+  }   break;
   default:
     std::cerr << "Skipping " << FLPR::Syntax_Tags::label(prgm_cursor->syntag())
               << " in specification-part\n";
