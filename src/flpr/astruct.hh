@@ -22,10 +22,10 @@ struct Attr_Spec {
 };
 
 struct Intrinsic_Type_Spec {
-  /* The node of the type keyword (e.g. FLOAT) */
+  /* The node of the type keyword (e.g. FLOAT, INTEGER, CHARACTER) */
   st_ref type;
-  /* The root of the kind specification */
-  st_ref kind;
+  /* The root of a char-selector or kind-selector specification */
+  st_ref selector;
   INGEST(Intrinsic_Type_Spec);
 };
 

@@ -149,7 +149,7 @@ INGEST_DEF(Intrinsic_Type_Spec) {
       } else {
         EXPECT_TAG(SG_KIND_SELECTOR);
       }
-      ast.kind = root;
+      ast.selector = root;
     }
     return std::optional<Intrinsic_Type_Spec>{ast};
   }
