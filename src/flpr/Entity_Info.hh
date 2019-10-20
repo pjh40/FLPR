@@ -14,11 +14,22 @@
   Define attributes for an data entity/object
 */
 
+#include "astruct.hh"
 
 namespace FLPR {
 
 class Entity_Info {
 public:
+  constexpr std::string const &name() const noexcept { return name_; }
+  void name(std::string const &value) noexcept {  name_ =  value; }
+  
+  constexpr bool is_dummy_param() const noexcept { return dummy_param_; }
+  constexpr void is_dummy_param(const bool value) noexcept { dummy_param_ = value; }
+
+  AST::Declaration_Type_Spec decl_type_spec() const noexcept { return decl_type_spec_; }
+  void decl_type_spec(AST::Declaration_Type_Spec const &value) { decl_type_spec_ = value; }
+  
+  /* Boolean attributes */
   constexpr bool is_allocatable() const noexcept { return allocatable_; }
   constexpr void is_allocatable(const bool value) noexcept { allocatable_ = value; }
   constexpr bool is_asynchronous() const noexcept { return asynchronous_; }
@@ -46,9 +57,12 @@ public:
   constexpr bool is_volatile() const noexcept { return volatile_; }
   constexpr void is_volatile(const bool value) noexcept { volatile_ = value; }
 private:
+  std::string name_;
+  AST::Declaration_Type_Spec decl_type_spec_;
   bool allocatable_ = false;
   bool asynchronous_ = false;
   bool contiguous_ = false;
+  bool dummy_param_ = false;
   bool external_ = false;
   bool intrinsic_ = false;
   bool optional_ = false;
