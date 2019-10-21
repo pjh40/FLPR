@@ -381,16 +381,6 @@ Stmt_Tree arithmetic_if_stmt(TT_Stream &ts) {
   EVAL(SG_ARITHMETIC_IF_STMT, p(ts));
 }
 
-//! This is to remove ambiguity between different shape/size specs
-Stmt_Tree array_spec_helper(TT_Stream &ts) {
-  constexpr auto p =
-    h_seq(opt(rule(expr)),
-          opt(TOK(TK_COLON)),
-          opt(h_alts(rule(expr),
-                     TOK(TK_ASTERISK))));
-  return p(ts);
-}
-
 //! R917: array-element (9.5.3.1)
 Stmt_Tree array_element(TT_Stream &ts) {
   RULE(SG_ARRAY_ELEMENT);
@@ -418,23 +408,22 @@ Stmt_Tree array_element(TT_Stream &ts) {
   EVAL(SG_ARRAY_ELEMENT, p(ts));
 }
 
-//! TRUNCATED R807: array-spec (8.5.8)
+//! R807: array-spec (8.5.8)
 Stmt_Tree array_spec(TT_Stream &ts) {
   RULE(SG_ARRAY_SPEC);
   constexpr auto p =
     alts(rule_tag,
-         /*
-           These rules require a lot of checking to ensure they fully execute
+         /* This one first, because if it doesn't end with an
+            assumed-implied-spec, it is just an explicit-shape-spec-list */
+         rule(assumed_size_spec),
          list(TAG(SG_EXPLICIT_SHAPE_SPEC_LIST), rule(explicit_shape_spec)),
          list(TAG(SG_ASSUMED_SHAPE_SPEC_LIST), rule(assumed_shape_spec)),
-         // Syntactically, this will be picked up by the above
+         /* Syntactically, deferred-shape-spec is recognized by
+            assumed-shape-spec, so we can't differentiate them here. */
          // list(TAG(SG_DEFERRED_SHAPE_SPEC_LIST), rule(deferred_shape_spec)),
-         rule(assumed_size_spec),
+         /* implied-shape-spec goes first because it requires a longer match */
          rule(implied_shape_spec),
-         tag_if(TAG(SG_IMPLIED_SHAPE_OR_ASSUMED_SIZE_SPEC),
-         rule(assumed_implied_spec)),
-         */
-         list(TAG(SG_ARRAY_SPEC_LIST), rule(array_spec_helper)),
+         rule(implied_shape_or_assumed_size_spec),
          tag_if(TAG(SG_ASSUMED_RANK_SPEC), TOK(TK_DBL_DOT))
          );
   EVAL(SG_ARRAY_SPEC, p(ts));
@@ -503,7 +492,7 @@ Stmt_Tree assumed_size_spec(TT_Stream &ts) {
     seq(rule_tag,
         list(TAG(SG_EXPLICIT_SHAPE_SPEC_LIST), rule(explicit_shape_spec)),
         TOK(TK_COMMA),
-        rule(assumed_shape_spec));
+        rule(assumed_implied_spec));
   EVAL(SG_ASSUMED_SIZE_SPEC, p(ts));
 }
 
@@ -808,12 +797,14 @@ Stmt_Tree common_stmt(TT_Stream &ts) {
   EVAL(SG_COMMON_STMT, p(ts));
 }
 
-//! TRUNCATED: R740: component-array-spec (7.5.4.1)
+//! R740: component-array-spec (7.5.4.1)
 Stmt_Tree component_array_spec(TT_Stream &ts) {
   RULE(SG_COMPONENT_ARRAY_SPEC);
   constexpr auto p =
     alts(rule_tag,
-         list(TAG(SG_COMPONENT_ARRAY_SPEC_LIST), rule(array_spec_helper)));
+         list(TAG(SG_EXPLICIT_SHAPE_SPEC_LIST), rule(explicit_shape_spec)),
+         list(TAG(SG_DEFERRED_SHAPE_SPEC_LIST), rule(deferred_shape_spec))
+         );
   EVAL(SG_COMPONENT_ARRAY_SPEC, p(ts));
 }
 
@@ -1163,6 +1154,13 @@ Stmt_Tree default_char_expr(TT_Stream &ts) {
   RULE(SG_DEFAULT_CHAR_EXPR);
   constexpr auto p = tag_if(rule_tag, rule(expr));
   EVAL(SG_DEFAULT_CHAR_EXPR, p(ts));
+}
+
+//! R820: deferred-shape-spec (8.5.8.4)
+Stmt_Tree deferred_shape_spec(TT_Stream &ts) {
+  RULE(SG_DEFERRED_SHAPE_SPEC);
+  constexpr auto p = tag_if(rule_tag, TOK(TK_COLON));
+  EVAL(SG_DEFERRED_SHAPE_SPEC, p(ts));
 }
 
 //! R1509: defined-io-generic-spec (15.4.3.2)
@@ -1780,7 +1778,6 @@ Stmt_Tree form_team_stmt(TT_Stream &ts) {
   EVAL(SG_FORM_TEAM_STMT, p(ts));
 }
 
-
 //! R753: final-procedure-stmt (7.5.6.1)
 Stmt_Tree final_procedure_stmt(TT_Stream &ts) {
   RULE(SG_FINAL_PROCEDURE_STMT);
@@ -2036,13 +2033,24 @@ Stmt_Tree implicit_stmt(TT_Stream &ts) {
   EVAL(SG_IMPLICIT_STMT, p(ts));
 }
 
-//! R824: implied-shape-spec (8.5.8.6)
+//! R823: implied-shape-or-assumed-size-spec (8.5.8.5)
+Stmt_Tree implied_shape_or_assumed_size_spec(TT_Stream &ts) {
+  RULE(SG_IMPLIED_SHAPE_OR_ASSUMED_SIZE_SPEC);
+  constexpr auto p =
+    seq(rule_tag,
+        rule(assumed_implied_spec)
+        );
+  EVAL(SG_IMPLIED_SHAPE_SPEC, p(ts));
+}
+
+//! R824: implied-shape-spec (8.5.8.5)
 Stmt_Tree implied_shape_spec(TT_Stream &ts) {
   RULE(SG_IMPLIED_SHAPE_SPEC);
   constexpr auto p =
     seq(rule_tag,
         /* Odd sort of rule requires a list of at least two
-           assumed-implied-spec */
+           assumed-implied-spec, because a single assumed-implied-spec is
+           actually implied-shape-or-assumed-size-spec */
         rule(assumed_implied_spec),
         TOK(TK_COMMA),
         list(TAG(SG_ASSUMED_IMPLIED_SPEC_LIST), rule(assumed_implied_spec))
