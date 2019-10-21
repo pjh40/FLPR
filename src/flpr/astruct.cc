@@ -25,6 +25,16 @@
 namespace FLPR {
 namespace AST {
 
+INGEST_DEF(Array_Spec) {
+  if(ROOT_TAG_IS(SG_ARRAY_SPEC) && root.has_down()) {
+    Array_Spec ast;
+    root.down();
+    ast.array_spec = root; /* FIXME: true, but lazy. */
+    return std::optional<Array_Spec>{ast};
+  }
+  return std::optional<Array_Spec>{};
+}
+
 INGEST_DEF(Attr_Spec) {
   if (ROOT_TAG_IS(SG_ATTR_SPEC) && root.has_down()) {
     Attr_Spec ast;
@@ -64,8 +74,7 @@ INGEST_DEF(Entity_Decl) {
     root.next();
     if (ROOT_TAG_IS(TK_PARENL)) {
       root.next();
-      EXPECT_TAG(SG_ARRAY_SPEC);
-      ast.array_spec = root;
+      ast.array_spec = Array_Spec::ingest(root);
       root.next();
       EXPECT_TAG(TK_PARENR);
       if (!root.has_next())

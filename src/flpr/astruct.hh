@@ -16,6 +16,11 @@ using st_ref = FLPR::Stmt::Stmt_Tree::const_cursor_t;
 
 #define INGEST(term) static std::optional<term> ingest(st_ref root)
 
+struct Array_Spec {
+  st_ref array_spec;
+  INGEST(Array_Spec);
+};
+
 struct Attr_Spec {
   st_ref attr_spec;
   INGEST(Attr_Spec);
@@ -45,12 +50,12 @@ struct Declaration_Type_Spec {
 struct Entity_Decl {
   st_ref name;
   /* If set, the root of an array-spec */
-  st_ref array_spec;
+  std::optional<Array_Spec> array_spec;
   /* If set, the root of the coarray-spec */
   st_ref coarray_spec;
   /* If set, the root of the char-length */
   st_ref char_length;
-  /* If set, the root of the initialization */
+  /* If set, the root of the initialization expression */
   st_ref initialization;
   INGEST(Entity_Decl);
 };
