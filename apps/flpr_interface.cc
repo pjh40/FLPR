@@ -16,7 +16,7 @@
 
 #include "flpr/astruct.hh"
 #include "flpr/flpr.hh"
-#include "flpr/Entity_Info.hh"
+#include "flpr/Symbol_Table.hh"
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -71,7 +71,7 @@ bool do_file(std::string const &filename, FLPR::File_Type file_type,
 
 int main(int argc, char *argv[]) {
 
-  FLPR::Entity_Info ei;
+  FLPR::Symbol_Table symtab;
   
   if (argc != 2) {
     std::cerr << "Usage: flpr_interface <fortran file>" << std::endl;

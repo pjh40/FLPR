@@ -30,6 +30,7 @@ set(Libflpr_SRCS
   Prgm_Tree.cc
   Stmt_Parser_Exts.cc
   Stmt_Tree.cc
+  Symbol_Table.cc
   Syntax_Tags.cc
   Token_Text.cc
   TT_Stream.cc
@@ -63,6 +64,7 @@ set(flpr_headers
   Stmt_Parser_Exts.hh
   Stmt_Parsers.hh
   Stmt_Tree.hh
+  Symbol_Table.hh
   Syntax_Tags.hh
   Syntax_Tags_Defs.hh
   TT_Stream.hh
