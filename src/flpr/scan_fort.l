@@ -260,6 +260,7 @@ write { return Syntax_Tags::KW_WRITE; }
                    yyless(0); yy_push_state(kind_parse); }
   .|\n           { curr_line_pos -= yyleng;
                    yyless(0);  BEGIN(INITIAL); }
+  <<EOF>>       {  BEGIN(INITIAL); }
 }
 
   /* R714: real-literal-constant (7.4.3.2) */
