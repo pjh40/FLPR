@@ -422,6 +422,7 @@ void Logical_Line::erase_stmt_text_(int stln, int stcol, int eln, int ecol) {
   assert(layout_[stln].is_fortran());
   bool const multiline = stln < eln;
   int const hold_stln = stln;
+
   if (multiline) {
     assert(layout_[eln].is_fortran());
     layout_[stln].main_txt.erase(stcol);
@@ -436,18 +437,21 @@ void Logical_Line::erase_stmt_text_(int stln, int stcol, int eln, int ecol) {
   assert(stcol >= 0);
   assert(ecol <= static_cast<int>(layout_[eln].main_txt.size()));
   layout_[stln].main_txt.erase(stcol, ecol - stcol);
+
   if (layout_[stln].main_txt.find_first_not_of(' ') == std::string::npos) {
     layout_[stln].main_txt.clear();
     if (multiline)
       layout_[stln].make_comment_or_blank();
   }
 
-  int count_fortran{0};
-  for (int i = hold_stln; i <= eln; ++i)
-    if (layout_[i].is_fortran())
-      count_fortran += 1;
-  if (count_fortran == 1)
-    layout_[hold_stln].make_uncontinued();
+  if (multiline) {
+    int count_fortran{0};
+    for (int i = hold_stln; i <= eln; ++i)
+      if (layout_[i].is_fortran())
+        count_fortran += 1;
+    if (count_fortran == 1)
+      layout_[hold_stln].make_uncontinued();
+  }
 }
 
 /* ------------------------------------------------------------------------ */
