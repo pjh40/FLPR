@@ -17,10 +17,11 @@ int curr_line_pos = 0;
 using FLPR::Syntax_Tags;
 %}
 %option full
+%option ecs
 %option case-insensitive
 %option noyywrap
 %option stack
-%x real_parse exp_parse kind_parse
+%x real_parse exp_parse kind_parse int_only
 DIGIT       [0-9]
 NAME        [a-z][a-z0-9_]*
 KIND        ([0-9]+)|({NAME})
@@ -220,11 +221,16 @@ write { return Syntax_Tags::KW_WRITE; }
 ".eqv."  { return Syntax_Tags::TK_EQV_OP; }
 ".neqv." { return Syntax_Tags::TK_NEQV_OP; }
 
+
   /* ---------------------------- LITERALS ---------------------------- */
 
   /* R724: logical-literal-constant (7.4.5) */
 ".false."(_{KIND})? { return Syntax_Tags::TK_FALSE_CONSTANT; }
 ".true."(_{KIND})?  { return Syntax_Tags::TK_TRUE_CONSTANT; }
+
+  /* Defined operator */
+\.[a-z]+\. { return Syntax_Tags::TK_DEF_OP; } 
+
 
   /* R724: char-literal-constant (7.4.4.3) */
 ({KIND}_)?\"(\"\"|[^"])*\" /* non-greedy  */ {
@@ -245,12 +251,22 @@ write { return Syntax_Tags::KW_WRITE; }
   {KIND} { yy_pop_state(); return Syntax_Tags::SG_KIND_PARAM; }
 }
 
+<int_only>{
+  {DIGIT}+  { BEGIN(INITIAL);  return Syntax_Tags::SG_INT_LITERAL_CONSTANT; }
+}
+
   /* Note that this definition will identify the "digit-string exponent-letter
      ..." variant of 7.4.3.2 as "significand exponent-letter ...",
      even though there is no decimal place.  This just makes it easier to
      spot real-literal-constant patterns in the token stream without
      lookahead. */
 <real_parse>{
+  /* digit-string '.' can look like a real, unless that period belongs
+     to a operator like '.and.'. Filter out that case */
+  {DIGIT}+(\.[a-z]+\.) { curr_line_pos -= yyleng; 
+                         yyless(0);
+                         BEGIN(int_only);
+                       }
   {SIGNIFICAND}  { return Syntax_Tags::SG_SIGNIFICAND;  }
   {DIGIT}+       { return Syntax_Tags::SG_SIGNIFICAND;  }
   {EXPONENT}     { curr_line_pos -= yyleng; 
@@ -276,8 +292,6 @@ write { return Syntax_Tags::KW_WRITE; }
 
   /* These must be last to allow keyword and operator completion */
 
-  /* Defined operator */
-\.[a-z]+\. { return Syntax_Tags::TK_DEF_OP; } 
 {NAME}     { return Syntax_Tags::TK_NAME; }
 
 [ \t\r] /* eat whitespace */
