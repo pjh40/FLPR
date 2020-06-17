@@ -73,6 +73,32 @@ bool expr() {
   TPS(expr, "a**3+b(3,[:]):]", TK_COLON);
   TSS(expr, "999 1");
   FPS(expr, ":", TK_COLON);
+
+  {
+    LL_Helper l({"a.eq.11.and..not.b.gt.2..or.b"});
+    FLPR::TT_Stream ts{l.stream1()};                                   
+    Stmt_Tree st = FLPR::Stmt::expr(ts);
+    auto c{st.cursor()};
+    TEST_TAG(c->syntag, SG_EXPR);
+    TEST_INT(c.num_branches(), 10);
+    c.down();
+    c.next(2);
+    TEST_TAG(c->syntag, SG_INT_LITERAL_CONSTANT);
+    c.next();
+    TEST_TAG(c->syntag, TK_AND_OP);
+    c.next();
+    TEST_TAG(c->syntag, TK_NOT_OP);
+    c.next();
+    TEST_TAG(c->syntag, TK_NAME);
+    c.next();
+    TEST_TAG(c->syntag, TK_REL_GT);
+    c.next();
+    TEST_TAG(c->syntag, SG_REAL_LITERAL_CONSTANT);
+    c.next();
+    TEST_TAG(c->syntag, TK_OR_OP);
+    c.next();
+    TEST_TAG(c->syntag, TK_NAME);
+  }
   return true;
 }
 

@@ -154,6 +154,7 @@ bool data_stmt() {
   TSS(data_stmt, "data chart/'t'/");
   TSS(data_stmt, "data chart/'t'/,crun/'.run'/,pathd/'test/'/");
   TSS(data_stmt, "data sfac/.2d0/,sadd/100.d0/");
+  TSS(data_stmt, "data boo1/.true./,boo2/.false./");
   return true;
 }
 
