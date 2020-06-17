@@ -58,6 +58,10 @@ Stmt_Tree consume_until_break(TT_Stream &ts, int const rule_tag) {
   int nesting_depth = 1;
   Stmt_Tree root{rule_tag};
   while (nesting_depth > 0) {
+    if (nesting_depth > 1 && ts.peek() == TAG(BAD)) {
+      FAIL;
+      break;
+    }
     if (Syntax_Tags::TK_PARENL == ts.peek()) {
       nesting_depth += 1;
     } else if (Syntax_Tags::TK_BRACKETL == ts.peek()) {
@@ -80,7 +84,6 @@ Stmt_Tree consume_until_break(TT_Stream &ts, int const rule_tag) {
         break;
       if (Syntax_Tags::TK_EQUAL == ts.peek()) {
         FAIL;
-        root.clear();
         break;
       }
     }
