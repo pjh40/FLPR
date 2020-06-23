@@ -13,8 +13,8 @@ Items related CPP (C-Preprocessor) and raw line formatting
   + If the comment text begins in C7, but there is no fortran
     statement in C7 below (e.g. indented), put the comment in
     `left_text`.
-  + If the comment text is aligned with the statement `main_txt`, put
-    the comment in `main_txt`.
+  + If the comment text is aligned with the statement `main_text`, put
+    the comment in `main_text`.
   + If the comment text is in `right_text`, leave it there.
 - Check that statement continuations are being handled correctly.
   + In free format, a leading ampersand on a continuation line implies
@@ -37,7 +37,7 @@ Implement the missing parsers:
 
 Items related to performance and memory use.
 - Speed up the parser combinator approach.
-- Look at clearing `main_txt` from `File_Line` once it has been put
+- Look at clearing `main_text` from `File_Line` once it has been put
   under the control of a `Logical_Line` (text is already found in the
   `Token_Text`)
 - Could "collapse" linear subtrees in the `Stmt_Tree`.

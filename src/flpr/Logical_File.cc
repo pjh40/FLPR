@@ -134,7 +134,7 @@ bool Logical_File::scan_fixed(Line_Buf const &raw_lines, int const last_col) {
 
       /* absorb any continued preprocessor lines */
       size_t start_line = curr++;
-      while (curr < N && last_non_blank_char(fl[curr - 1].left_txt) == '\\') {
+      while (curr < N && last_non_blank_char(fl[curr - 1].left_text) == '\\') {
         fl[curr].make_preprocessor();
         curr += 1;
       }
@@ -246,7 +246,7 @@ bool Logical_File::scan_free(std::vector<std::string> const &raw_lines) {
 
       /* absorb any continued lines */
       size_t start_line = curr++;
-      while (curr < N && last_non_blank_char(fl[curr - 1].left_txt) == '\\') {
+      while (curr < N && last_non_blank_char(fl[curr - 1].left_text) == '\\') {
         fl[curr].make_preprocessor();
         curr += 1;
       }
@@ -515,10 +515,10 @@ bool Logical_File::convert_fixed_to_free() {
           File_Line &fl = layout[curr_idx];
           if (curr_fortran_line + 1 < total_fortran_lines) {
             /* Need to add a trailing continuation mark */
-            if (fl.right_txt.empty()) {
-              fl.right_txt = "&";
+            if (fl.right_text.empty()) {
+              fl.right_text = "&";
             } else {
-              fl.right_txt.insert(0, "& ");
+              fl.right_text.insert(0, "& ");
               if (fl.open_delim == '\0' && fl.right_space.size() > 2) {
                 fl.right_space.erase(0, 2);
               }
@@ -527,28 +527,28 @@ bool Logical_File::convert_fixed_to_free() {
                 File_Line::class_flags::continued);
           }
 
-          /* Adjust left_txt and left_spaces */
+          /* Adjust left_text and left_spaces */
           if (curr_fortran_line == 0) {
-            if (fl.left_txt.empty()) {
+            if (fl.left_text.empty()) {
               fl.left_space.insert(0, 6, ' ');
             }
           } else {
             /* Need to adjust the control column 6 continuation mark */
-            assert(fl.left_txt.size() == 6);
+            assert(fl.left_text.size() == 6);
 
             if (!needs_front_continuation.empty() &&
                 needs_front_continuation.front() == curr_idx) {
               needs_front_continuation.pop_front();
-              fl.left_txt[5] = '&';
+              fl.left_text[5] = '&';
             } else {
               layout[curr_idx].unset_classification(
                   File_Line::class_flags::continuation);
-              assert(fl.left_txt[0] == ' ');
-              assert(fl.left_txt[1] == ' ');
-              assert(fl.left_txt[2] == ' ');
-              assert(fl.left_txt[3] == ' ');
-              assert(fl.left_txt[4] == ' ');
-              fl.left_txt.clear();
+              assert(fl.left_text[0] == ' ');
+              assert(fl.left_text[1] == ' ');
+              assert(fl.left_text[2] == ' ');
+              assert(fl.left_text[3] == ' ');
+              assert(fl.left_text[4] == ' ');
+              fl.left_text.clear();
               fl.left_space.insert(0, 6, ' ');
             }
           }
@@ -558,9 +558,9 @@ bool Logical_File::convert_fixed_to_free() {
              character in control column one... anything else that has been
              identified as a comment line must already begin with a '!' */
           File_Line &fl = layout[curr_idx];
-          assert(!fl.left_txt.empty());
-          if (fl.left_txt[0] != ' ')
-            fl.left_txt[0] = '!';
+          assert(!fl.left_text.empty());
+          if (fl.left_text[0] != ' ')
+            fl.left_text[0] = '!';
         }
       }
     } else {
@@ -569,9 +569,9 @@ bool Logical_File::convert_fixed_to_free() {
       for (size_t curr_idx = 0; curr_idx < N_FL; ++curr_idx) {
         if (layout[curr_idx].is_comment()) {
           File_Line &fl = layout[curr_idx];
-          assert(!fl.left_txt.empty());
-          if (fl.left_txt[0] != ' ')
-            fl.left_txt[0] = '!';
+          assert(!fl.left_text.empty());
+          if (fl.left_text[0] != ' ')
+            fl.left_text[0] = '!';
         }
       }
     }

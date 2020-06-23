@@ -19,10 +19,10 @@
 
 namespace FLPR {
 void Line_Accum::add_line(int const file_lineno, int const num_left_spaces,
-                          int const main_txt_file_colno,
-                          std::string const &main_txt,
+                          int const main_text_file_colno,
+                          std::string const &main_text,
                           int const num_right_spaces) {
-  /* main_txt starts at lli_to_accum_offset_[i], and relates to file line
+  /* main_text starts at lli_to_accum_offset_[i], and relates to file line
      numbers lli_to_file_line_num_[i], and column number
      lli_to_file_column_num_[i]. */
   if (!lli_to_accum_offset_.empty() && num_left_spaces > 0) {
@@ -30,8 +30,8 @@ void Line_Accum::add_line(int const file_lineno, int const num_left_spaces,
   }
   lli_to_accum_offset_.push_back(accum_.size());
   lli_to_file_line_num_.push_back(file_lineno);
-  lli_to_file_column_num_.push_back(main_txt_file_colno);
-  accum_ += main_txt;
+  lli_to_file_column_num_.push_back(main_text_file_colno);
+  accum_ += main_text;
   if (num_right_spaces > 0) {
     accum_ += ' ';
   }
@@ -51,7 +51,7 @@ bool Line_Accum::linecolno(int accum_offset, int &lineno, int &colno) const {
   assert(lli < lli_to_accum_offset_.size());
   assert(lli_to_accum_offset_[lli] <= accum_offset);
 
-  /* adjust to be the offset within the main_txt for this LLI */
+  /* adjust to be the offset within the main_text for this LLI */
   accum_offset -= lli_to_accum_offset_[lli];
   lineno = lli_to_file_line_num_[lli];
   colno = lli_to_file_column_num_[lli] + accum_offset;
@@ -76,7 +76,7 @@ bool Line_Accum::linecolno(int accum_offset, int &lineno, int &colno,
   assert(lli < lli_to_accum_offset_.size());
   assert(lli_to_accum_offset_[lli] <= accum_offset);
 
-  /* adjust to be the offset within the main_txt for this LLI */
+  /* adjust to be the offset within the main_text for this LLI */
   accum_offset -= lli_to_accum_offset_[lli];
   lineno = lli_to_file_line_num_[lli];
   colno = lli_to_file_column_num_[lli] + accum_offset;

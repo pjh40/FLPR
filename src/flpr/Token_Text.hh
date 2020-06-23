@@ -61,10 +61,10 @@ public:
   int post_spaces() const noexcept { return post_spaces_; }
 
   /************* Accessors for testing purposes only *******************/
-  int main_txt_line() const noexcept { return mt_begin_line_; }
-  int main_txt_col() const noexcept { return mt_begin_col_; }
-  int main_txt_eline() const noexcept { return mt_end_line_; }
-  int main_txt_ecol() const noexcept { return mt_end_col_; }
+  int main_text_line() const noexcept { return mt_begin_line_; }
+  int main_text_col() const noexcept { return mt_begin_col_; }
+  int main_text_eline() const noexcept { return mt_end_line_; }
+  int main_text_ecol() const noexcept { return mt_end_col_; }
 
 private:
   std::string text_;          //!< The matched text (lexeme)
@@ -75,11 +75,11 @@ private:
   /*********************************************************************/
   //! Index of the Logical_Line::layout_ line the first character is on
   int mt_begin_line_;
-  //! Index of starting column in main_txt
+  //! Index of starting column in main_text
   int mt_begin_col_;
   //! Index of the Logical_Line::layout_ line the last+1 character is on
   int mt_end_line_;
-  //! Index of last (+1) column in main_txt
+  //! Index of last (+1) column in main_text
   int mt_end_col_;
   //! The number of spaces before this token
   int pre_spaces_;

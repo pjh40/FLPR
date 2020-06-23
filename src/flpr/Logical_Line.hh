@@ -147,7 +147,7 @@ public:
   //! Remove the fragment, updating everything
   void remove_fragment(typename TT_List::iterator frag);
 
-  //! Replace the main_txt in a Logical_Line
+  //! Replace the main_text in a Logical_Line
   void replace_main_text(std::vector<std::string> const &new_text);
 
   void replace_stmt_substr(TT_Range const &orig, std::string const &new_text);
@@ -229,8 +229,8 @@ private:
     in section 6.3.2.2 of the standard */
   void unsmash();
 
-  //! Append a token to main_txt if it fits within max_len characters
-  bool append_tt_if_(std::string &main_txt, size_t max_len,
+  //! Append a token to main_text if it fits within max_len characters
+  bool append_tt_if_(std::string &main_text, size_t max_len,
                      Token_Text const &tt, bool first);
 
   void erase_stmt_text_(int stln, int stcol, int eln, int ecol);

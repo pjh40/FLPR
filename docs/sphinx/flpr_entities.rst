@@ -42,9 +42,9 @@ statements compounded together on a line.
     File_Line is also used as a template for reformatting source
     lines.
 
-    Examples of fields in File_Line include ``left_txt`` (control
+    Examples of fields in File_Line include ``left_text`` (control
     columns for fixed form), ``left_space`` (whitespace between
-    ``left_txt`` and ``main_txt``) and ``main_txt`` (the body of the
+    ``left_text`` and ``main_text``) and ``main_text`` (the body of the
     Fortran line).  File_Line also provides line-level categorization
     flags, including ``comment``, ``blank``, ``label``, etc.
     

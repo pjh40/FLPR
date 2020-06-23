@@ -108,8 +108,8 @@ bool fixed_labelled() {
   File_Line fl = File_Line::analyze_fixed(1, str, '\0', 0);
   TEST_TRUE(fl.is_fortran());
   TEST_TRUE(fl.has_label());
-  TEST_STR(" 100", fl.left_txt);
-  TEST_STR("continue", fl.main_txt);
+  TEST_STR(" 100", fl.left_text);
+  TEST_STR("continue", fl.main_text);
   return true;
 }
 
@@ -119,9 +119,9 @@ bool fixed_indent() {
   File_Line fl = File_Line::analyze_fixed(1, str, '\0', 0);
   TEST_TRUE(fl.is_fortran());
   TEST_FALSE(fl.has_label());
-  TEST_STR("", fl.left_txt);
+  TEST_STR("", fl.left_text);
   TEST_STR("  ", fl.left_space);
-  TEST_STR("call foo()", fl.main_txt);
+  TEST_STR("call foo()", fl.main_text);
   return true;
 }
 
@@ -133,9 +133,9 @@ bool fixed_continuation() {
   TEST_FALSE(fl.has_label());
   TEST_TRUE(fl.is_continuation());
   TEST_FALSE(fl.is_continued());
-  TEST_STR("     a", fl.left_txt);
+  TEST_STR("     a", fl.left_text);
   TEST_STR("   ", fl.left_space);
-  TEST_STR("call foo()", fl.main_txt);
+  TEST_STR("call foo()", fl.main_text);
   TEST_CHAR('\0', fl.open_delim);
   return true;
 }
@@ -149,9 +149,9 @@ bool fixed_not_a_continuation() {
   TEST_FALSE(fl.has_label());
   TEST_FALSE(fl.is_continuation());
   TEST_FALSE(fl.is_continued());
-  TEST_STR("     0", fl.left_txt);
+  TEST_STR("     0", fl.left_text);
   TEST_STR("   ", fl.left_space);
-  TEST_STR("call foo()", fl.main_txt);
+  TEST_STR("call foo()", fl.main_text);
   TEST_CHAR('\0', fl.open_delim);
   return true;
 }
@@ -165,11 +165,11 @@ bool fixed_trailing_comment() {
   TEST_FALSE(fl.has_label());
   TEST_FALSE(fl.is_continuation());
   TEST_FALSE(fl.is_continued());
-  TEST_STR("", fl.left_txt);
+  TEST_STR("", fl.left_text);
   TEST_STR("  ", fl.left_space);
-  TEST_STR("call foo()", fl.main_txt);
+  TEST_STR("call foo()", fl.main_text);
   TEST_STR(" ", fl.right_space);
-  TEST_STR("! trailing ", fl.right_txt);
+  TEST_STR("! trailing ", fl.right_text);
   return true;
 }
 
@@ -182,11 +182,11 @@ bool fixed_trailing_blank() {
   TEST_FALSE(fl.has_label());
   TEST_FALSE(fl.is_continuation());
   TEST_FALSE(fl.is_continued());
-  TEST_TRUE(fl.left_txt.empty());
+  TEST_TRUE(fl.left_text.empty());
   TEST_TRUE(fl.left_space.empty());
-  TEST_STR("call foo()", fl.main_txt);
+  TEST_STR("call foo()", fl.main_text);
   TEST_STR("  ", fl.right_space);
-  TEST_TRUE(fl.right_txt.empty());
+  TEST_TRUE(fl.right_text.empty());
   return true;
 }
 
@@ -227,7 +227,7 @@ bool free_comment1() {
   TEST_TRUE(fl.is_comment());
   TEST_TRUE(fl.is_trivial());
   TEST_FALSE(fl.is_fortran());
-  TEST_STR("!     Boring comment", fl.left_txt);
+  TEST_STR("!     Boring comment", fl.left_text);
   return true;
 }
 
@@ -238,7 +238,7 @@ bool free_comment2() {
   TEST_TRUE(fl.is_comment());
   TEST_TRUE(fl.is_trivial());
   TEST_FALSE(fl.is_fortran());
-  TEST_STR("    !     Boring comment ", fl.left_txt);
+  TEST_STR("    !     Boring comment ", fl.left_text);
   return true;
 }
 
@@ -251,7 +251,7 @@ bool free_flprpp() {
   TEST_FALSE(fl.is_fortran());
   TEST_FALSE(fl.is_continued());
   TEST_FALSE(fl.is_continuation());
-  TEST_STR("!#flpr foo", fl.left_txt);
+  TEST_STR("!#flpr foo", fl.left_text);
   return true;
 }
 
@@ -261,8 +261,8 @@ bool free_labelled() {
   File_Line fl = File_Line::analyze_free(1, str, '\0', false, in_literal);
   TEST_TRUE(fl.is_fortran());
   TEST_TRUE(fl.has_label());
-  TEST_STR(" 100", fl.left_txt);
-  TEST_STR("continue", fl.main_txt);
+  TEST_STR(" 100", fl.left_text);
+  TEST_STR("continue", fl.main_text);
   return true;
 }
 
@@ -272,7 +272,7 @@ bool free_cont_notlabel() {
   File_Line fl = File_Line::analyze_free(1, str, '\0', true, in_literal);
   TEST_TRUE(fl.is_fortran());
   TEST_FALSE(fl.has_label());
-  TEST_STR("100_8)", fl.main_txt);
+  TEST_STR("100_8)", fl.main_text);
   return true;
 }
 
@@ -282,9 +282,9 @@ bool free_indent() {
   File_Line fl = File_Line::analyze_free(1, str, '\0', false, in_literal);
   TEST_TRUE(fl.is_fortran());
   TEST_FALSE(fl.has_label());
-  TEST_STR("", fl.left_txt);
+  TEST_STR("", fl.left_text);
   TEST_STR("        ", fl.left_space);
-  TEST_STR("call foo()", fl.main_txt);
+  TEST_STR("call foo()", fl.main_text);
   return true;
 }
 
@@ -296,11 +296,11 @@ bool free_continuation() {
   TEST_FALSE(fl.has_label());
   TEST_FALSE(fl.is_continuation());
   TEST_TRUE(fl.is_continued());
-  TEST_STR("", fl.left_txt);
+  TEST_STR("", fl.left_text);
   TEST_STR("        ", fl.left_space);
-  TEST_STR("call foo(", fl.main_txt);
+  TEST_STR("call foo(", fl.main_text);
   TEST_STR("", fl.right_space);
-  TEST_STR("& ", fl.right_txt);
+  TEST_STR("& ", fl.right_text);
   TEST_CHAR('\0', fl.open_delim);
   return true;
 }
@@ -313,11 +313,11 @@ bool free_char_context_continue1() {
   TEST_FALSE(fl.has_label());
   TEST_FALSE(fl.is_continuation());
   TEST_TRUE(fl.is_continued());
-  TEST_STR("", fl.left_txt);
+  TEST_STR("", fl.left_text);
   TEST_STR("        ", fl.left_space);
-  TEST_STR("call foo(' ", fl.main_txt);
+  TEST_STR("call foo(' ", fl.main_text);
   TEST_STR("", fl.right_space);
-  TEST_STR("& ", fl.right_txt);
+  TEST_STR("& ", fl.right_text);
   TEST_CHAR('\'', fl.open_delim);
   return true;
 }
@@ -330,10 +330,10 @@ bool free_char_context_continue2() {
   TEST_FALSE(fl.has_label());
   TEST_FALSE(fl.is_continuation());
   TEST_TRUE(fl.is_continued());
-  TEST_STR("", fl.left_txt);
+  TEST_STR("", fl.left_text);
   TEST_STR("        ", fl.left_space);
-  TEST_STR("call foo(\"", fl.main_txt);
-  TEST_STR("& ", fl.right_txt);
+  TEST_STR("call foo(\"", fl.main_text);
+  TEST_STR("& ", fl.right_text);
   TEST_CHAR('"', fl.open_delim);
   return true;
 }
@@ -346,9 +346,9 @@ bool free_lead_cont() {
   TEST_FALSE(fl.has_label());
   TEST_TRUE(fl.is_continuation());
   TEST_FALSE(fl.is_continued());
-  TEST_STR("   &", fl.left_txt);
+  TEST_STR("   &", fl.left_text);
   TEST_TRUE(fl.left_space.empty());
-  TEST_STR(" foo)", fl.main_txt);
+  TEST_STR(" foo)", fl.main_text);
   TEST_CHAR('\0', fl.open_delim);
   return true;
 }
@@ -361,9 +361,9 @@ bool free_lead_follow_cont1() {
   TEST_FALSE(fl.has_label());
   TEST_TRUE(fl.is_continuation());
   TEST_TRUE(fl.is_continued());
-  TEST_STR("   &", fl.left_txt);
+  TEST_STR("   &", fl.left_text);
   TEST_STR("", fl.left_space);
-  TEST_STR(" foo', foo,", fl.main_txt);
+  TEST_STR(" foo', foo,", fl.main_text);
   TEST_STR(" ", fl.right_space);
   TEST_CHAR('\0', fl.open_delim);
   return true;
@@ -377,10 +377,10 @@ bool free_lead_follow_cont2() {
   TEST_FALSE(fl.has_label());
   TEST_TRUE(fl.is_continuation());
   TEST_TRUE(fl.is_continued());
-  TEST_STR("   &", fl.left_txt);
+  TEST_STR("   &", fl.left_text);
   TEST_STR("", fl.left_space);
-  TEST_STR(" foo', foo, \" ", fl.main_txt);
-  TEST_STR("&  ", fl.right_txt);
+  TEST_STR(" foo', foo, \" ", fl.main_text);
+  TEST_STR("&  ", fl.right_text);
   TEST_CHAR('\"', fl.open_delim);
   return true;
 }
@@ -393,11 +393,11 @@ bool free_contcomment() {
   TEST_FALSE(fl.has_label());
   TEST_FALSE(fl.is_continuation());
   TEST_TRUE(fl.is_continued());
-  TEST_STR("", fl.left_txt);
+  TEST_STR("", fl.left_text);
   TEST_STR("        ", fl.left_space);
-  TEST_STR("call foo(", fl.main_txt);
+  TEST_STR("call foo(", fl.main_text);
   TEST_STR("  ", fl.right_space);
-  TEST_STR("& ! this", fl.right_txt);
+  TEST_STR("& ! this", fl.right_text);
   return true;
 }
 
@@ -410,11 +410,11 @@ bool free_trailing_comment() {
   TEST_TRUE(fl.has_label());
   TEST_FALSE(fl.is_continuation());
   TEST_FALSE(fl.is_continued());
-  TEST_STR("100", fl.left_txt);
+  TEST_STR("100", fl.left_text);
   TEST_STR("    ", fl.left_space);
-  TEST_STR("call foo()", fl.main_txt);
+  TEST_STR("call foo()", fl.main_text);
   TEST_STR(" ", fl.right_space);
-  TEST_STR("! okay ", fl.right_txt);
+  TEST_STR("! okay ", fl.right_text);
   return true;
 }
 
@@ -427,11 +427,11 @@ bool free_trailing_blank() {
   TEST_FALSE(fl.has_label());
   TEST_FALSE(fl.is_continuation());
   TEST_FALSE(fl.is_continued());
-  TEST_TRUE(fl.left_txt.empty());
+  TEST_TRUE(fl.left_text.empty());
   TEST_STR("    ", fl.left_space);
-  TEST_STR("call foo()", fl.main_txt);
+  TEST_STR("call foo()", fl.main_text);
   TEST_STR(" ", fl.right_space);
-  TEST_TRUE(fl.right_txt.empty());
+  TEST_TRUE(fl.right_text.empty());
   return true;
 }
 

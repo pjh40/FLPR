@@ -52,20 +52,20 @@ bool test_simple_1() {
 bool offsets_1() {
   Logical_Line ll("call bar()");
   FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
-  TEST_INT(curr->main_txt_line(), 0);
-  TEST_INT(curr->main_txt_col(), 0);
+  TEST_INT(curr->main_text_line(), 0);
+  TEST_INT(curr->main_text_col(), 0);
   TEST_INT(curr->start_pos, 1);
   std::advance(curr, 1);
-  TEST_INT(curr->main_txt_line(), 0);
-  TEST_INT(curr->main_txt_col(), 5);
+  TEST_INT(curr->main_text_line(), 0);
+  TEST_INT(curr->main_text_col(), 5);
   TEST_INT(curr->start_pos, 6);
   std::advance(curr, 1);
-  TEST_INT(curr->main_txt_line(), 0);
-  TEST_INT(curr->main_txt_col(), 8);
+  TEST_INT(curr->main_text_line(), 0);
+  TEST_INT(curr->main_text_col(), 8);
   TEST_INT(curr->start_pos, 9);
   std::advance(curr, 1);
-  TEST_INT(curr->main_txt_line(), 0);
-  TEST_INT(curr->main_txt_col(), 9);
+  TEST_INT(curr->main_text_line(), 0);
+  TEST_INT(curr->main_text_col(), 9);
   TEST_INT(curr->start_pos, 10);
   return true;
 }
@@ -73,16 +73,16 @@ bool offsets_1() {
 bool offsets_2() {
   Logical_Line ll("      call bar()");
   FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
-  TEST_INT(curr->main_txt_col(), 0);
+  TEST_INT(curr->main_text_col(), 0);
   TEST_INT(curr->start_pos, 7);
   std::advance(curr, 1);
-  TEST_INT(curr->main_txt_col(), 5);
+  TEST_INT(curr->main_text_col(), 5);
   TEST_INT(curr->start_pos, 12);
   std::advance(curr, 1);
-  TEST_INT(curr->main_txt_col(), 8);
+  TEST_INT(curr->main_text_col(), 8);
   TEST_INT(curr->start_pos, 15);
   std::advance(curr, 1);
-  TEST_INT(curr->main_txt_col(), 9);
+  TEST_INT(curr->main_text_col(), 9);
   TEST_INT(curr->start_pos, 16);
   return true;
 }
@@ -179,20 +179,20 @@ bool replace_fragment_1() {
   TEST_STR("longer_bar", name->text());
 
   FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
-  TEST_INT(curr->main_txt_line(), 0);
-  TEST_INT(curr->main_txt_col(), 0);
+  TEST_INT(curr->main_text_line(), 0);
+  TEST_INT(curr->main_text_col(), 0);
 
   std::advance(curr, 1);
-  TEST_INT(curr->main_txt_line(), 0);
-  TEST_INT(curr->main_txt_col(), 5);
+  TEST_INT(curr->main_text_line(), 0);
+  TEST_INT(curr->main_text_col(), 5);
 
   std::advance(curr, 1);
-  TEST_INT(curr->main_txt_line(), 0);
-  TEST_INT(curr->main_txt_col(), 15);
+  TEST_INT(curr->main_text_line(), 0);
+  TEST_INT(curr->main_text_col(), 15);
 
   std::advance(curr, 1);
-  TEST_INT(curr->main_txt_line(), 0);
-  TEST_INT(curr->main_txt_col(), 16);
+  TEST_INT(curr->main_text_line(), 0);
+  TEST_INT(curr->main_text_col(), 16);
   return true;
 }
 
@@ -204,20 +204,20 @@ bool replace_fragment_2() {
   TEST_STR("b", name->text());
 
   FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
-  TEST_INT(curr->main_txt_line(), 0);
-  TEST_INT(curr->main_txt_col(), 0);
+  TEST_INT(curr->main_text_line(), 0);
+  TEST_INT(curr->main_text_col(), 0);
 
   std::advance(curr, 1);
-  TEST_INT(curr->main_txt_line(), 0);
-  TEST_INT(curr->main_txt_col(), 5);
+  TEST_INT(curr->main_text_line(), 0);
+  TEST_INT(curr->main_text_col(), 5);
 
   std::advance(curr, 1);
-  TEST_INT(curr->main_txt_line(), 0);
-  TEST_INT(curr->main_txt_col(), 6);
+  TEST_INT(curr->main_text_line(), 0);
+  TEST_INT(curr->main_text_col(), 6);
 
   std::advance(curr, 1);
-  TEST_INT(curr->main_txt_line(), 0);
-  TEST_INT(curr->main_txt_col(), 7);
+  TEST_INT(curr->main_text_line(), 0);
+  TEST_INT(curr->main_text_col(), 7);
   return true;
 }
 
@@ -234,11 +234,11 @@ bool split_after_0() {
   TEST_TOK(KW_CALL, ll.fragments().front().token);
   TEST_TOK(TK_NAME, ll.fragments().back().token);
   TEST_INT(ll.layout().size(), 1);
-  TEST_TRUE(ll.layout()[0].left_txt.empty());
+  TEST_TRUE(ll.layout()[0].left_text.empty());
   TEST_STR("   ", ll.layout()[0].left_space);
-  TEST_STR("call bar", ll.layout()[0].main_txt);
+  TEST_STR("call bar", ll.layout()[0].main_text);
   TEST_STR("  ", ll.layout()[0].right_space);
-  TEST_STR("! comment", ll.layout()[0].right_txt);
+  TEST_STR("! comment", ll.layout()[0].right_text);
 
   return true;
 }
@@ -253,26 +253,26 @@ bool split_after_1() {
   TEST_INT(ll.fragments().size(), 1);
   TEST_TOK(KW_CALL, ll.fragments().front().token);
   TEST_INT(ll.layout().size(), 1);
-  TEST_TRUE(ll.layout()[0].left_txt.empty());
+  TEST_TRUE(ll.layout()[0].left_text.empty());
   TEST_TRUE(ll.layout()[0].left_space.empty());
-  TEST_STR("call", ll.layout()[0].main_txt);
+  TEST_STR("call", ll.layout()[0].main_text);
   TEST_TRUE(ll.layout()[0].right_space.empty());
-  TEST_TRUE(ll.layout()[0].right_txt.empty());
+  TEST_TRUE(ll.layout()[0].right_text.empty());
 
   TEST_INT(remain.fragments().size(), 1);
   TEST_TOK(TK_NAME, remain.fragments().front().token);
   TEST_INT(remain.layout().size(), 1);
-  TEST_TRUE(remain.layout()[0].left_txt.empty());
+  TEST_TRUE(remain.layout()[0].left_text.empty());
   TEST_TRUE(remain.layout()[0].left_space.empty());
-  TEST_STR("bar", remain.layout()[0].main_txt);
+  TEST_STR("bar", remain.layout()[0].main_text);
   TEST_TRUE(remain.layout()[0].right_space.empty());
-  TEST_TRUE(remain.layout()[0].right_txt.empty());
+  TEST_TRUE(remain.layout()[0].right_text.empty());
   for (auto const &tt : remain.fragments()) {
-    TEST_INT(tt.main_txt_line(), 0);
+    TEST_INT(tt.main_text_line(), 0);
     size_t tlen = tt.text().size();
-    size_t tpos = tt.main_txt_col();
-    std::string main_txt = remain.layout()[0].main_txt.substr(tpos, tlen);
-    TEST_EQ(main_txt, tt.text());
+    size_t tpos = tt.main_text_col();
+    std::string main_text = remain.layout()[0].main_text.substr(tpos, tlen);
+    TEST_EQ(main_text, tt.text());
   }
 
   return true;
@@ -288,26 +288,26 @@ bool split_after_2() {
   TEST_INT(ll.fragments().size(), 1);
   TEST_TOK(KW_CALL, ll.fragments().front().token);
   TEST_INT(ll.layout().size(), 1);
-  TEST_TRUE(ll.layout()[0].left_txt.empty());
+  TEST_TRUE(ll.layout()[0].left_text.empty());
   TEST_TRUE(ll.layout()[0].left_space.empty());
-  TEST_STR("call", ll.layout()[0].main_txt);
+  TEST_STR("call", ll.layout()[0].main_text);
   TEST_STR("         ", ll.layout()[0].right_space);
-  TEST_STR("! foo", ll.layout()[0].right_txt);
+  TEST_STR("! foo", ll.layout()[0].right_text);
 
   TEST_INT(remain.fragments().size(), 1);
   TEST_TOK(TK_NAME, remain.fragments().front().token);
   TEST_INT(remain.layout().size(), 1);
-  TEST_TRUE(remain.layout()[0].left_txt.empty());
+  TEST_TRUE(remain.layout()[0].left_text.empty());
   TEST_TRUE(remain.layout()[0].left_space.empty());
-  TEST_STR("bar", remain.layout()[0].main_txt);
+  TEST_STR("bar", remain.layout()[0].main_text);
   TEST_TRUE(remain.layout()[0].right_space.empty());
-  TEST_TRUE(remain.layout()[0].right_txt.empty());
+  TEST_TRUE(remain.layout()[0].right_text.empty());
   for (auto const &tt : remain.fragments()) {
-    TEST_INT(tt.main_txt_line(), 0);
+    TEST_INT(tt.main_text_line(), 0);
     size_t tlen = tt.text().size();
-    size_t tpos = tt.main_txt_col();
-    std::string main_txt = remain.layout()[0].main_txt.substr(tpos, tlen);
-    TEST_EQ(main_txt, tt.text());
+    size_t tpos = tt.main_text_col();
+    std::string main_text = remain.layout()[0].main_text.substr(tpos, tlen);
+    TEST_EQ(main_text, tt.text());
   }
 
   return true;
@@ -323,26 +323,26 @@ bool split_after_3() {
   TEST_INT(ll.fragments().size(), 1);
   TEST_TOK(KW_CALL, ll.fragments().front().token);
   TEST_INT(ll.layout().size(), 1);
-  TEST_TRUE(ll.layout()[0].left_txt.empty());
+  TEST_TRUE(ll.layout()[0].left_text.empty());
   TEST_STR("   ", ll.layout()[0].left_space);
-  TEST_STR("call", ll.layout()[0].main_txt);
+  TEST_STR("call", ll.layout()[0].main_text);
   TEST_STR("         ", ll.layout()[0].right_space);
-  TEST_STR("! foo", ll.layout()[0].right_txt);
+  TEST_STR("! foo", ll.layout()[0].right_text);
 
   TEST_INT(remain.fragments().size(), 1);
   TEST_TOK(TK_NAME, remain.fragments().front().token);
   TEST_INT(remain.layout().size(), 1);
-  TEST_TRUE(remain.layout()[0].left_txt.empty());
+  TEST_TRUE(remain.layout()[0].left_text.empty());
   TEST_STR("   ", remain.layout()[0].left_space);
-  TEST_STR("bar", remain.layout()[0].main_txt);
+  TEST_STR("bar", remain.layout()[0].main_text);
   TEST_TRUE(remain.layout()[0].right_space.empty());
-  TEST_TRUE(remain.layout()[0].right_txt.empty());
+  TEST_TRUE(remain.layout()[0].right_text.empty());
   for (auto const &tt : remain.fragments()) {
-    TEST_INT(tt.main_txt_line(), 0);
+    TEST_INT(tt.main_text_line(), 0);
     size_t tlen = tt.text().size();
-    size_t tpos = tt.main_txt_col();
-    std::string main_txt = remain.layout()[0].main_txt.substr(tpos, tlen);
-    TEST_EQ(main_txt, tt.text());
+    size_t tpos = tt.main_text_col();
+    std::string main_text = remain.layout()[0].main_text.substr(tpos, tlen);
+    TEST_EQ(main_text, tt.text());
   }
   return true;
 }
@@ -357,27 +357,27 @@ bool split_after_4() {
   TEST_INT(ll.fragments().size(), 1);
   TEST_TOK(KW_CALL, ll.fragments().front().token);
   TEST_INT(ll.layout().size(), 1);
-  TEST_STR(" 2", ll.layout()[0].left_txt);
+  TEST_STR(" 2", ll.layout()[0].left_text);
   TEST_STR(" ", ll.layout()[0].left_space);
-  TEST_STR("call", ll.layout()[0].main_txt);
+  TEST_STR("call", ll.layout()[0].main_text);
   TEST_STR("         ", ll.layout()[0].right_space);
-  TEST_STR("! foo", ll.layout()[0].right_txt);
+  TEST_STR("! foo", ll.layout()[0].right_text);
   TEST_INT(ll.label, 2);
 
   TEST_INT(remain.fragments().size(), 1);
   TEST_TOK(TK_NAME, remain.fragments().front().token);
   TEST_INT(remain.layout().size(), 1);
-  TEST_TRUE(remain.layout()[0].left_txt.empty());
+  TEST_TRUE(remain.layout()[0].left_text.empty());
   TEST_STR("   ", remain.layout()[0].left_space);
-  TEST_STR("bar", remain.layout()[0].main_txt);
+  TEST_STR("bar", remain.layout()[0].main_text);
   TEST_TRUE(remain.layout()[0].right_space.empty());
-  TEST_TRUE(remain.layout()[0].right_txt.empty());
+  TEST_TRUE(remain.layout()[0].right_text.empty());
   for (auto const &tt : remain.fragments()) {
-    TEST_INT(tt.main_txt_line(), 0);
+    TEST_INT(tt.main_text_line(), 0);
     size_t tlen = tt.text().size();
-    size_t tpos = tt.main_txt_col();
-    std::string main_txt = remain.layout()[0].main_txt.substr(tpos, tlen);
-    TEST_EQ(main_txt, tt.text());
+    size_t tpos = tt.main_text_col();
+    std::string main_text = remain.layout()[0].main_text.substr(tpos, tlen);
+    TEST_EQ(main_text, tt.text());
   }
   return true;
 }
@@ -392,26 +392,26 @@ bool split_after_5() {
   TEST_TOK(KW_CALL, ll.fragments().front().token);
   TEST_TOK(TK_NAME, ll.fragments().back().token);
   TEST_INT(ll.layout().size(), 1);
-  TEST_TRUE(ll.layout()[0].left_txt.empty());
+  TEST_TRUE(ll.layout()[0].left_text.empty());
   TEST_STR("   ", ll.layout()[0].left_space);
-  TEST_STR("call bar", ll.layout()[0].main_txt);
+  TEST_STR("call bar", ll.layout()[0].main_text);
   TEST_STR("      ", ll.layout()[0].right_space);
-  TEST_STR("!hey", ll.layout()[0].right_txt);
+  TEST_STR("!hey", ll.layout()[0].right_text);
 
   TEST_INT(remain.fragments().size(), 5);
   TEST_TOK(TK_NAME, remain.fragments().front().token);
   TEST_INT(remain.layout().size(), 1);
-  TEST_TRUE(remain.layout()[0].left_txt.empty());
+  TEST_TRUE(remain.layout()[0].left_text.empty());
   TEST_STR("   ", remain.layout()[0].left_space);
-  TEST_STR("a=a+1", remain.layout()[0].main_txt);
+  TEST_STR("a=a+1", remain.layout()[0].main_text);
   TEST_TRUE(remain.layout()[0].right_space.empty());
-  TEST_TRUE(remain.layout()[0].right_txt.empty());
+  TEST_TRUE(remain.layout()[0].right_text.empty());
   for (auto const &tt : remain.fragments()) {
-    TEST_INT(tt.main_txt_line(), 0);
+    TEST_INT(tt.main_text_line(), 0);
     size_t tlen = tt.text().size();
-    size_t tpos = tt.main_txt_col();
-    std::string main_txt = remain.layout()[0].main_txt.substr(tpos, tlen);
-    TEST_EQ(main_txt, tt.text());
+    size_t tpos = tt.main_text_col();
+    std::string main_text = remain.layout()[0].main_text.substr(tpos, tlen);
+    TEST_EQ(main_text, tt.text());
   }
   return true;
 }
@@ -433,33 +433,33 @@ bool split_after_6() {
 
   TEST_INT(ll.fragments().size(), 6);
   TEST_INT(ll.layout().size(), 1);
-  TEST_TRUE(ll.layout()[0].left_txt.empty());
+  TEST_TRUE(ll.layout()[0].left_text.empty());
   TEST_STR("  ", ll.layout()[0].left_space);
-  TEST_STR("if(a>2)", ll.layout()[0].main_txt);
+  TEST_STR("if(a>2)", ll.layout()[0].main_text);
   TEST_STR("   ", ll.layout()[0].right_space);
-  TEST_STR("!comment 1", ll.layout()[0].right_txt);
+  TEST_STR("!comment 1", ll.layout()[0].right_text);
   for (auto const &tt : ll.fragments()) {
-    TEST_INT(tt.main_txt_line(), 0);
+    TEST_INT(tt.main_text_line(), 0);
     size_t tlen = tt.text().size();
-    size_t tpos = tt.main_txt_col();
-    std::string main_txt = ll.layout()[0].main_txt.substr(tpos, tlen);
-    TEST_EQ(main_txt, tt.text());
+    size_t tpos = tt.main_text_col();
+    std::string main_text = ll.layout()[0].main_text.substr(tpos, tlen);
+    TEST_EQ(main_text, tt.text());
   }
 
   TEST_INT(remain.fragments().size(), 1);
   TEST_TOK(KW_RETURN, remain.fragments().front().token);
   TEST_INT(remain.layout().size(), 1);
-  TEST_TRUE(remain.layout()[0].left_txt.empty());
+  TEST_TRUE(remain.layout()[0].left_text.empty());
   TEST_STR("  ", remain.layout()[0].left_space);
-  TEST_STR("return", remain.layout()[0].main_txt);
+  TEST_STR("return", remain.layout()[0].main_text);
   TEST_STR("   ", ll.layout()[0].right_space);
-  TEST_STR("!comment 2", remain.layout()[0].right_txt);
+  TEST_STR("!comment 2", remain.layout()[0].right_text);
   for (auto const &tt : remain.fragments()) {
-    TEST_INT(tt.main_txt_line(), 0);
+    TEST_INT(tt.main_text_line(), 0);
     size_t tlen = tt.text().size();
-    size_t tpos = tt.main_txt_col();
-    std::string main_txt = remain.layout()[0].main_txt.substr(tpos, tlen);
-    TEST_EQ(main_txt, tt.text());
+    size_t tpos = tt.main_text_col();
+    std::string main_text = remain.layout()[0].main_text.substr(tpos, tlen);
+    TEST_EQ(main_text, tt.text());
   }
 
   return true;
@@ -481,11 +481,11 @@ bool split_after_7() {
 
   TEST_INT(ll.fragments().size(), 7);
   TEST_INT(ll.layout().size(), 2);
-  TEST_STR("3", ll.layout()[0].left_txt);
+  TEST_STR("3", ll.layout()[0].left_text);
   TEST_STR(" ", ll.layout()[0].left_space);
-  TEST_STR("a=b; c=", ll.layout()[0].main_txt);
+  TEST_STR("a=b; c=", ll.layout()[0].main_text);
   TEST_STR(" ", ll.layout()[0].right_space);
-  TEST_STR("&     !comment 1", ll.layout()[0].right_txt);
+  TEST_STR("&     !comment 1", ll.layout()[0].right_text);
 
   // FIX: needs more checks
   for (auto const &fl : remain.layout())
@@ -507,14 +507,14 @@ bool replace_main_generic(std::vector<std::string> const &orig_lines,
   ll.replace_main_text(new_text);
   TEST_INT(ll.layout().size(), std::max(new_text.size(), orig_lines.size()));
   for (size_t i = 0; i < new_text.size(); ++i)
-    TEST_EQ(ll.layout()[i].main_txt, new_text[i]);
+    TEST_EQ(ll.layout()[i].main_text, new_text[i]);
 
   for (size_t i = 0; i < orig_lines.size(); ++i) {
     if (!copy_ll.layout()[i].is_continued() && ll.layout()[i].is_continued()) {
-      TEST_EQ(ll.layout()[i].right_txt.substr(2),
-              copy_ll.layout()[i].right_txt);
+      TEST_EQ(ll.layout()[i].right_text.substr(2),
+              copy_ll.layout()[i].right_text);
     } else {
-      TEST_EQ(ll.layout()[i].right_txt, copy_ll.layout()[i].right_txt);
+      TEST_EQ(ll.layout()[i].right_text, copy_ll.layout()[i].right_text);
     }
   }
 
@@ -525,7 +525,7 @@ bool replace_main_generic(std::vector<std::string> const &orig_lines,
   }
 
   if (fresh_ll.fragments().size() != ll.fragments().size()) {
-    std::cout << "\nDEBUG replace_main_txt fragments size\n";
+    std::cout << "\nDEBUG replace_main_text fragments size\n";
     for (auto const &fl : fresh_ll.layout())
       fl.dump(std::cout) << '\n';
     std::cout << "-----------------------------------------\n";

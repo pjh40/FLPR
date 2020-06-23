@@ -53,15 +53,15 @@ public:
   //! The (index origin=1) line number in the source
   int linenum;
   //! Labels, continuation symbols, preprocessor statements, and comments
-  std::string left_txt;
-  //! The whitespace between left_txt and main_txt
+  std::string left_text;
+  //! The whitespace between left_text and main_text
   std::string left_space;
   //! The body of a fortran line, trimmed of whitespace on both ends
-  std::string main_txt;
-  //! The whitespace between main_txt and right_txt
+  std::string main_text;
+  //! The whitespace between main_text and right_text
   std::string right_space;
   //! Trailing comments and/or continuation symbols.
-  std::string right_txt;
+  std::string right_text;
   //! Any open character context
   /*! If this line ends while in a character context, this is the
       character that must be matched in order to close the context.
@@ -144,20 +144,20 @@ public:
   //! Similar to std::swap
   void swap(File_Line &other);
 
-  //! Return the (index 1) character column number of main_txt
+  //! Return the (index 1) character column number of main_text
   int main_first_col() const {
-    if (main_txt.empty())
+    if (main_text.empty())
       return 0;
     int val = 1;
     if (is_fixed_format())
       val += 6;
     else
-      val += (int)left_txt.size();
+      val += (int)left_text.size();
     val += (int)left_space.size();
     return val;
   }
 
-  //! Transfer any leading or trailing spaces from main_txt to left and right
+  //! Transfer any leading or trailing spaces from main_text to left and right
   void unspace_main();
 
   //! If continued, unset continued flag and remove trailing amp
@@ -173,8 +173,8 @@ public:
   /*! Note that this will destroy all text on the line, including comments */
   void make_blank();
 
-  //! Remove main_txt and convert to comment or blank as appropriate
-  /*! No action if this line is_comment().  If there is a comment in right_txt,
+  //! Remove main_text and convert to comment or blank as appropriate
+  /*! No action if this line is_comment().  If there is a comment in right_text,
       this line is converted into a comment (all other fields blank), else
       make_blank() is called. */
   void make_comment_or_blank();
@@ -182,7 +182,7 @@ public:
   //! Return the number of characters across
   size_t size() const noexcept;
 
-  //! Set the number of spaces aligning the main_txt or comment
+  //! Set the number of spaces aligning the main_text or comment
   /*! Note that this will make no changes if not is_fortran() or is_comment().
       This function returns true if the spacing was altered, false otherwise. */
   bool set_leading_spaces(int const spaces);

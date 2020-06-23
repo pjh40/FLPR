@@ -53,13 +53,13 @@ File_Line::File_Line(const int ln, BITS const &c, std::string const &lt,
                      std::string const &ls, std::string const &mt,
                      std::string const &rs, std::string const &rt,
                      const char od)
-    : linenum(ln), left_txt(lt), left_space(ls), main_txt(mt), right_space(rs),
-      right_txt(rt), open_delim(od), classification_(c) {
+    : linenum(ln), left_text(lt), left_space(ls), main_text(mt),
+      right_space(rs), right_text(rt), open_delim(od), classification_(c) {
   assert(open_delim == '\0' || open_delim == '\"' || open_delim == '\'');
 }
 
 File_Line::File_Line(int ln, BITS const &c, std::string const &lt)
-    : linenum(ln), left_txt(lt), open_delim('\0'), classification_(c) {}
+    : linenum(ln), left_text(lt), open_delim('\0'), classification_(c) {}
 
 File_Line File_Line::analyze_fixed(int const linenum,
                                    std::string const &raw_txt_in,
@@ -328,31 +328,31 @@ File_Line File_Line::analyze_free(const int linenum, std::string const &raw_txt,
 
 void File_Line::swap(File_Line &other) {
   std::swap(linenum, other.linenum);
-  left_txt.swap(other.left_txt);
+  left_text.swap(other.left_text);
   left_space.swap(other.left_space);
-  main_txt.swap(other.main_txt);
+  main_text.swap(other.main_text);
   right_space.swap(other.right_space);
-  right_txt.swap(other.right_txt);
+  right_text.swap(other.right_text);
   std::swap(open_delim, other.open_delim);
   std::swap(classification_, other.classification_);
 }
 
 void File_Line::unspace_main() {
-  auto fnb = main_txt.find_first_not_of(' ');
+  auto fnb = main_text.find_first_not_of(' ');
   if (fnb == std::string::npos) {
-    // main_txt is empty?
+    // main_text is empty?
     set_classification(class_flags::blank);
     return;
   } else if (fnb > 0) {
-    main_txt.erase(0, fnb);
+    main_text.erase(0, fnb);
   }
-  auto lnb = main_txt.find_last_not_of(' ');
+  auto lnb = main_text.find_last_not_of(' ');
   assert(lnb != std::string::npos);
   auto ftb = lnb + 1;
-  if (ftb < main_txt.size()) {
-    size_t num_blanks = main_txt.size();
-    main_txt.erase(ftb);
-    num_blanks -= main_txt.size();
+  if (ftb < main_text.size()) {
+    size_t num_blanks = main_text.size();
+    main_text.erase(ftb);
+    num_blanks -= main_text.size();
     right_space.insert(right_space.end(), num_blanks, ' ');
   }
 }
@@ -361,16 +361,16 @@ void File_Line::make_uncontinued() {
   auto &bits = classification_;
   UNSET_CLASS(continued);
   size_t pos = 0;
-  if (!right_txt.empty()) {
-    if (right_txt[0] == '&')
-      right_txt[0] = ' ';
-    pos = right_txt.find_first_not_of(' ');
-    right_txt.erase(0, pos);
+  if (!right_text.empty()) {
+    if (right_text[0] == '&')
+      right_text[0] = ' ';
+    pos = right_text.find_first_not_of(' ');
+    right_text.erase(0, pos);
   }
-  if (right_txt.empty()) {
+  if (right_text.empty()) {
     right_space.clear();
   } else {
-    /* pad right_space so that right_txt comment doesn't move */
+    /* pad right_space so that right_text comment doesn't move */
     right_space.append(pos, ' ');
   }
 }
@@ -380,10 +380,10 @@ void File_Line::make_continued() {
   SET_CLASS(continued);
   if (right_space.empty())
     right_space.assign(1, ' ');
-  if (right_txt.empty())
-    right_txt.assign(1, '&');
-  else if (right_txt[0] != '&') {
-    right_txt.insert(0, "& ");
+  if (right_text.empty())
+    right_text.assign(1, '&');
+  else if (right_text[0] != '&') {
+    right_text.insert(0, "& ");
     /* If there is room, adjust right_space so that we don't change
        the start of a trailing comment */
     if (right_space.size() > 2)
@@ -398,11 +398,11 @@ void File_Line::make_preprocessor() {
   classification_.reset();
   classification_[ff] = is_fixed_format;
   classification_[pp] = true;
-  left_txt += left_space + main_txt + right_space + right_txt;
+  left_text += left_space + main_text + right_space + right_text;
   left_space.clear();
-  main_txt.clear();
+  main_text.clear();
   right_space.clear();
-  right_txt.clear();
+  right_text.clear();
 }
 
 void File_Line::make_blank() {
@@ -412,11 +412,11 @@ void File_Line::make_blank() {
   classification_.reset();
   classification_[ff] = is_fixed_format;
   classification_[blank] = true;
-  left_txt.clear();
+  left_text.clear();
   left_space.clear();
-  main_txt.clear();
+  main_text.clear();
   right_space.clear();
-  right_txt.clear();
+  right_text.clear();
 }
 
 void File_Line::make_comment_or_blank() {
@@ -432,17 +432,17 @@ void File_Line::make_comment_or_blank() {
     return;
   }
   if (classification_[trail]) {
-    assert(right_txt[0] == '&');
-    right_txt[0] = ' ';
+    assert(right_text[0] == '&');
+    right_text[0] = ' ';
   }
-  auto comment_start = right_txt.find('!');
+  auto comment_start = right_text.find('!');
   if (comment_start != std::string::npos && comment_start > 0) {
-    /* transfer any leading blanks from right_txt to right_space */
+    /* transfer any leading blanks from right_text to right_space */
     right_space.append(comment_start, ' ');
-    right_txt.erase(0, comment_start);
+    right_text.erase(0, comment_start);
     /* set each of the earlier text fields to be blank of the same length */
-    left_txt.assign(left_txt.size(), ' ');
-    right_txt.assign(right_txt.size(), ' ');
+    left_text.assign(left_text.size(), ' ');
+    right_text.assign(right_text.size(), ' ');
     bool const is_fixed_format = classification_[ff];
     classification_.reset();
     classification_[ff] = is_fixed_format;
@@ -453,71 +453,71 @@ void File_Line::make_comment_or_blank() {
 }
 
 size_t File_Line::size() const noexcept {
-  return left_txt.size() + left_space.size() + main_txt.size() +
-         right_space.size() + right_txt.size();
+  return left_text.size() + left_space.size() + main_text.size() +
+         right_space.size() + right_text.size();
 }
 
 bool File_Line::set_leading_spaces(int const spaces) {
   if (is_comment()) {
-    std::string::size_type pos = left_txt.find('!');
+    std::string::size_type pos = left_text.find('!');
     if (pos != std::string::npos) {
       left_space.clear();
-      main_txt.clear();
+      main_text.clear();
       right_space.clear();
-      right_txt.clear();
+      right_text.clear();
       if (static_cast<int>(pos) == spaces)
         return false; // no change needed
 
       /* If the comment began in the first column, it could have been from
          fixed-format.  Remove any empty control columns. */
       if (pos == 0) {
-        std::string::size_type tpos = left_txt.find_first_not_of(" \t", 1);
+        std::string::size_type tpos = left_text.find_first_not_of(" \t", 1);
         if (tpos != std::string::npos) {
           if (static_cast<int>(tpos) > 5) {
             if (static_cast<int>(tpos) >= spaces + 5) {
-              left_txt.erase(1, spaces + 4);
+              left_text.erase(1, spaces + 4);
             } else {
-              left_txt.erase(1, 4);
+              left_text.erase(1, 4);
             }
           }
         }
       } else {
-        left_txt.erase(0, pos);
+        left_text.erase(0, pos);
       }
-      left_txt.insert(0, spaces, ' ');
+      left_text.insert(0, spaces, ' ');
       return true;
     }
-    size_t leading_space = left_txt.size() + left_space.size();
-    pos = main_txt.find('!');
+    size_t leading_space = left_text.size() + left_space.size();
+    pos = main_text.find('!');
     if (pos != std::string::npos) {
       if (pos > 0) {
-        main_txt.erase(0, pos);
+        main_text.erase(0, pos);
         left_space.append(pos, ' ');
         leading_space += pos;
       }
       if (static_cast<int>(leading_space) == spaces)
         return false;
       /* I don't know why this would be true, but... */
-      if (static_cast<int>(left_txt.size()) < spaces) {
-        left_space.assign(spaces - left_txt.size(), ' ');
+      if (static_cast<int>(left_text.size()) < spaces) {
+        left_space.assign(spaces - left_text.size(), ' ');
         return true;
       }
       return false;
     }
-    // Don't do anything to a right_txt comment
+    // Don't do anything to a right_text comment
     return false;
 
   } else if (is_fortran()) {
     int orig_spaces{-1};
     int offset;
-    if (left_txt.empty()) {
+    if (left_text.empty()) {
       if (static_cast<int>(left_space.size()) == spaces)
         return false; // no change needed
       orig_spaces = left_space.size();
       offset = spaces - left_space.size();
       left_space.assign(spaces, ' ');
     } else {
-      int const lt_size = static_cast<int>(left_txt.size());
+      int const lt_size = static_cast<int>(left_text.size());
       orig_spaces = lt_size + left_space.size();
 
       /* Work around statement labels.*/
@@ -541,30 +541,30 @@ bool File_Line::set_leading_spaces(int const spaces) {
           return false; // no change needed
         if (orig_spaces < spaces) {
           offset = spaces - orig_spaces;
-          left_txt.insert(0, spaces - orig_spaces, ' ');
+          left_text.insert(0, spaces - orig_spaces, ' ');
         } else {
           /* see if there are some spaces to pull out before the continuation
              character */
-          std::string::size_type pos = left_txt.find_first_not_of(' ');
+          std::string::size_type pos = left_text.find_first_not_of(' ');
           assert(pos != std::string::npos);
           size_t const desired = orig_spaces - spaces;
           size_t const remove_count = std::min(pos, desired);
           offset = -remove_count;
-          left_txt.erase(0, remove_count);
+          left_text.erase(0, remove_count);
         }
       }
     }
-    /* See if we can adjust spacing to leave right_txt comments in their
+    /* See if we can adjust spacing to leave right_text comments in their
        original position */
-    if (!right_txt.empty() && offset) {
-      std::string::size_type pos = right_txt.find('!');
+    if (!right_text.empty() && offset) {
+      std::string::size_type pos = right_text.find('!');
       if (pos != std::string::npos) {
         if (offset < 0) {
-          /* The main_txt moved left, so we can introduce more spaces on the
+          /* The main_text moved left, so we can introduce more spaces on the
              right */
           right_space.insert(pos, -offset, ' ');
         } else {
-          /* The main_txt moved right, so see if we can squeeze right_space */
+          /* The main_text moved right, so see if we can squeeze right_space */
           int const min_size = (right_space.empty()) ? 0 : 1;
           int const squeeze = right_space.size() - offset;
           size_t const new_size = std::max(min_size, squeeze);
@@ -582,18 +582,18 @@ bool File_Line::set_leading_spaces(int const spaces) {
 int File_Line::get_leading_spaces() const noexcept {
   int retval{0};
   if (is_comment()) {
-    std::string::size_type pos = left_txt.find('!');
+    std::string::size_type pos = left_text.find('!');
     if (pos != std::string::npos) {
       retval = pos;
     } else {
-      pos = main_txt.find('!');
+      pos = main_text.find('!');
       if (pos != std::string::npos) {
-        retval = left_txt.size() + left_space.size() + pos;
+        retval = left_text.size() + left_space.size() + pos;
       } else {
-        pos = right_txt.find('!');
+        pos = right_text.find('!');
         if (pos != std::string::npos) {
-          retval = left_txt.size() + left_space.size() + main_txt.size() +
-                   right_txt.size() + pos;
+          retval = left_text.size() + left_space.size() + main_text.size() +
+                   right_text.size() + pos;
         }
       }
     }
@@ -613,21 +613,21 @@ bool File_Line::set_label(int new_label) {
   if (new_label == 0 && !has_label())
     return false;
   if (is_fixed_format()) {
-    if (left_txt.empty()) {
-      left_txt = std::to_string(new_label);
-      left_txt.append(6 - left_txt.size(), ' ');
+    if (left_text.empty()) {
+      left_text = std::to_string(new_label);
+      left_text.append(6 - left_text.size(), ' ');
       if (left_space.size() > 6)
         left_space.erase(0, 6);
     } else {
       assert(has_label());
-      left_txt = std::to_string(new_label);
-      left_txt.append(6 - left_txt.size(), ' ');
+      left_text = std::to_string(new_label);
+      left_text.append(6 - left_text.size(), ' ');
     }
   } else {
     /* free-format */
-    size_t const old_size = left_txt.size();
-    left_txt = std::to_string(new_label);
-    size_t const new_size = left_txt.size();
+    size_t const old_size = left_text.size();
+    left_text = std::to_string(new_label);
+    size_t const new_size = left_text.size();
     if (new_size < old_size) {
       left_space.append(old_size - new_size, ' ');
     } else if (new_size > old_size) {
@@ -646,8 +646,8 @@ bool File_Line::set_label(int new_label) {
 std::ostream &File_Line::dump(std::ostream &os) const {
   print_classbits(os) << ' ';
   if (!is_blank())
-    os << '<' << left_txt << "> <" << left_space << "> <" << main_txt << "> <"
-       << right_space << "> <" << right_txt << '>';
+    os << '<' << left_text << "> <" << left_space << "> <" << main_text << "> <"
+       << right_space << "> <" << right_text << '>';
   return os;
 }
 
@@ -665,12 +665,12 @@ std::ostream &File_Line::print_classbits(std::ostream &os) const {
 std::ostream &operator<<(std::ostream &os, FLPR::File_Line const &fl) {
   if (fl.is_fortran() && fl.is_fixed_format()) {
     auto flags = os.setf(std::ios::left);
-    os << std::setw(6) << fl.left_txt << fl.left_space << fl.main_txt
-       << fl.right_space << fl.right_txt;
+    os << std::setw(6) << fl.left_text << fl.left_space << fl.main_text
+       << fl.right_space << fl.right_text;
     os.setf(flags);
   } else
-    os << fl.left_txt << fl.left_space << fl.main_txt << fl.right_space
-       << fl.right_txt;
+    os << fl.left_text << fl.left_space << fl.main_text << fl.right_space
+       << fl.right_text;
   return os;
 }
 

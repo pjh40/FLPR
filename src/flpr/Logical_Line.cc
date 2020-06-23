@@ -129,17 +129,17 @@ void Logical_Line::init_from_layout() noexcept {
 
       /* need to add the left and right space sizes here so that continued lines
          have the correct breaks between lexemes. */
-      la.add_line(fl.linenum, fl.left_space.size(), first_col, fl.main_txt,
+      la.add_line(fl.linenum, fl.left_space.size(), first_col, fl.main_text,
                   fl.right_space.size());
     }
   }
 
   if (layout_.front().has_label()) {
-    assert(!layout_.front().left_txt.empty());
+    assert(!layout_.front().left_text.empty());
     std::size_t pos;
-    label = std::stoi(layout_.front().left_txt, &pos);
-    if (pos < layout_.front().left_txt.size()) {
-      std::cerr << "Label \"" << layout_.front().left_txt
+    label = std::stoi(layout_.front().left_text, &pos);
+    if (pos < layout_.front().left_text.size()) {
+      std::cerr << "Label \"" << layout_.front().left_text
                 << "\" not fully converted to integer" << std::endl;
     }
   } else
@@ -149,13 +149,13 @@ void Logical_Line::init_from_layout() noexcept {
 }
 
 namespace {
-size_t max_main_txt_len(File_Line const &fl) noexcept {
+size_t max_main_text_len(File_Line const &fl) noexcept {
   const size_t MAX_CHARS{76};
   if (fl.is_comment())
     return 0;
 
-  size_t mlen = fl.left_txt.size() + fl.left_space.size();
-  const size_t rlen = fl.right_space.size() + fl.right_txt.size();
+  size_t mlen = fl.left_text.size() + fl.left_space.size();
+  const size_t rlen = fl.right_space.size() + fl.right_text.size();
 
   // We will try to format around the right space and right txt, as
   // long as we have some room to do so.  Note that this will get us
@@ -172,7 +172,7 @@ Logical_Line::FL_VEC::iterator
 continue_fl(Logical_Line::FL_VEC &text, Logical_Line::FL_VEC::iterator curr) {
   curr->make_continued();
 
-  size_t spaces = curr->left_txt.size() + curr->left_space.size();
+  size_t spaces = curr->left_text.size() + curr->left_space.size();
   if (curr == text.begin())
     spaces += 2;
   // Add (or move to) the next line in text
@@ -183,9 +183,9 @@ continue_fl(Logical_Line::FL_VEC &text, Logical_Line::FL_VEC::iterator curr) {
   if (curr == text.end())
     curr = text.insert(text.end(), File_Line());
   else {
-    curr->left_txt.clear();
+    curr->left_text.clear();
     curr->make_uncontinued();
-    curr->main_txt.clear();
+    curr->main_text.clear();
   }
   curr->left_space.assign(spaces, ' ');
   return curr;
@@ -194,7 +194,7 @@ continue_fl(Logical_Line::FL_VEC &text, Logical_Line::FL_VEC::iterator curr) {
 } // namespace
 
 /* ------------------------------------------------------------------------ */
-bool Logical_Line::append_tt_if_(std::string &main_txt, size_t max_len,
+bool Logical_Line::append_tt_if_(std::string &main_text, size_t max_len,
                                  Token_Text const &tt, bool first) {
   size_t len = tt.text().size();
   if (!first && tt.pre_spaces_ > 0)
@@ -202,11 +202,11 @@ bool Logical_Line::append_tt_if_(std::string &main_txt, size_t max_len,
   // Save room to end the line on a comma
   if (tt.token != Syntax_Tags::TK_COMMA)
     max_len -= 1;
-  if (main_txt.size() + len > max_len)
+  if (main_text.size() + len > max_len)
     return false;
   if (!first && tt.pre_spaces_ > 0)
-    main_txt.append(tt.pre_spaces_, ' ');
-  main_txt.append(tt.text());
+    main_text.append(tt.pre_spaces_, ' ');
+  main_text.append(tt.text());
   return true;
 }
 
@@ -217,15 +217,15 @@ void Logical_Line::text_from_frags() noexcept {
   auto fline_it = layout_.begin();
   if (!fline_it->is_fortran())
     return;
-  fline_it->main_txt.clear();
+  fline_it->main_text.clear();
   fline_it->make_uncontinued();
 
   bool line_start{true};
-  size_t max_llen = max_main_txt_len(*fline_it);
+  size_t max_llen = max_main_text_len(*fline_it);
   for (auto tt_it = fragments_.begin(); tt_it != fragments_.end(); ++tt_it) {
     int redo = 0;
     do {
-      if (append_tt_if_(fline_it->main_txt, max_llen, *tt_it, line_start)) {
+      if (append_tt_if_(fline_it->main_text, max_llen, *tt_it, line_start)) {
         //	    std::cout << "APPEND " << redo << ' ' << *tt_it << '\n';
         redo = 0;
         line_start = false;
@@ -245,8 +245,8 @@ void Logical_Line::text_from_frags() noexcept {
 
         for (size_t i = 0; i < splits; ++i) {
           if (i > 0)
-            fline_it->main_txt.append(1, '&');
-          fline_it->main_txt.append(tt_it->text().substr(pos, count));
+            fline_it->main_text.append(1, '&');
+          fline_it->main_text.append(tt_it->text().substr(pos, count));
           // Move the continuation ampersand in close
           if (i + 1 != splits) {
             fline_it->make_continued();
@@ -263,7 +263,7 @@ void Logical_Line::text_from_frags() noexcept {
         //	    std::cout << "NEW LINE" << std::endl;
         // Setup a new File_Line
         fline_it = continue_fl(layout_, fline_it);
-        max_llen = max_main_txt_len(*fline_it);
+        max_llen = max_main_text_len(*fline_it);
         line_start = true;
         // Try again
         redo += 1;
@@ -284,11 +284,11 @@ void Logical_Line::text_from_frags() noexcept {
   while (fline_it != layout_.end()) {
     if (!fline_it->is_comment()) {
       fline_it->make_uncontinued();
-      if (fline_it->right_txt.empty()) {
+      if (fline_it->right_text.empty()) {
         fline_it->set_classification(File_Line::class_flags::blank);
         blanked = true;
       } else {
-        fline_it->main_txt.clear();
+        fline_it->main_text.clear();
         fline_it->set_classification(File_Line::class_flags::comment);
       }
     }
@@ -318,8 +318,8 @@ void Logical_Line::replace_fragment(typename TT_List::iterator frag,
 
   assert(!frag->is_split_token_());
   int const layout_line = frag->mt_begin_line_;
-  std::string &main_txt = layout_[layout_line].main_txt;
-  main_txt.replace(frag->mt_begin_col_, old_text_len, new_text);
+  std::string &main_text = layout_[layout_line].main_text;
+  main_text.replace(frag->mt_begin_col_, old_text_len, new_text);
 
   // Update the mt_begin_col_ for all fragments following on this line
   for (frag = std::next(frag);
@@ -339,8 +339,8 @@ void Logical_Line::remove_fragment(typename TT_List::iterator frag) {
   /* this isn't setup to do tokens that are split across continuations */
   assert(!frag->is_split_token_());
   int const layout_line = frag->mt_begin_line_;
-  std::string &main_txt = layout_[layout_line].main_txt;
-  main_txt.erase(frag->mt_begin_col_, old_text_len);
+  std::string &main_text = layout_[layout_line].main_text;
+  main_text.erase(frag->mt_begin_col_, old_text_len);
 
   int const len_change = -(int)(old_text_len);
 
@@ -388,8 +388,8 @@ void Logical_Line::replace_main_text(std::vector<std::string> const &new_text) {
     int const indent = layout_[ref_line].main_first_col() - 1;
     File_Line ref_fl = layout_[ref_line];
     ref_fl.make_continued();
-    ref_fl.left_txt.clear();
-    ref_fl.right_txt.clear();
+    ref_fl.left_text.clear();
+    ref_fl.right_text.clear();
     ref_fl.set_leading_spaces(indent);
     layout_.insert(layout_.end(), new_text.size() - old_size, ref_fl);
   }
@@ -397,7 +397,7 @@ void Logical_Line::replace_main_text(std::vector<std::string> const &new_text) {
   /* copy the new text into place */
   size_t fl_idx{0};
   for (std::string const &s : new_text) {
-    layout_[fl_idx++].main_txt = s;
+    layout_[fl_idx++].main_text = s;
   }
   assert(ref_line < fl_idx);
 
@@ -425,7 +425,7 @@ void Logical_Line::erase_stmt_text_(int stln, int stcol, int eln, int ecol) {
 
   if (multiline) {
     assert(layout_[eln].is_fortran());
-    layout_[stln].main_txt.erase(stcol);
+    layout_[stln].main_text.erase(stcol);
     while (++stln < eln) {
       if (!layout_[stln].is_fortran())
         continue;
@@ -435,11 +435,11 @@ void Logical_Line::erase_stmt_text_(int stln, int stcol, int eln, int ecol) {
   }
   assert(stcol <= ecol);
   assert(stcol >= 0);
-  assert(ecol <= static_cast<int>(layout_[eln].main_txt.size()));
-  layout_[stln].main_txt.erase(stcol, ecol - stcol);
+  assert(ecol <= static_cast<int>(layout_[eln].main_text.size()));
+  layout_[stln].main_text.erase(stcol, ecol - stcol);
 
-  if (layout_[stln].main_txt.find_first_not_of(' ') == std::string::npos) {
-    layout_[stln].main_txt.clear();
+  if (layout_[stln].main_text.find_first_not_of(' ') == std::string::npos) {
+    layout_[stln].main_text.clear();
     if (multiline)
       layout_[stln].make_comment_or_blank();
   }
@@ -463,7 +463,7 @@ void Logical_Line::replace_stmt_substr(TT_Range const &orig,
   int const el = orig.back().mt_end_line_;
   int const ec = orig.back().mt_end_col_;
   erase_stmt_text_(sl, sc, el, ec);
-  layout_[sl].main_txt.insert(sc, new_text);
+  layout_[sl].main_text.insert(sc, new_text);
   init_from_layout();
 }
 
@@ -480,8 +480,8 @@ void Logical_Line::insert_text_before(typename TT_List::iterator frag,
     sc = frag->mt_begin_col_;
   }
   assert(sl < static_cast<int>(layout_.size()));
-  assert(sc <= static_cast<int>(layout_[sl].main_txt.size()));
-  layout_[sl].main_txt.insert(sc, new_text);
+  assert(sc <= static_cast<int>(layout_[sl].main_text.size()));
+  layout_[sl].main_text.insert(sc, new_text);
   init_from_layout();
 }
 
@@ -494,8 +494,8 @@ void Logical_Line::insert_text_after(typename TT_List::iterator frag,
   ec = frag->mt_end_col_;
 
   assert(el < static_cast<int>(layout_.size()));
-  assert(ec <= static_cast<int>(layout_[el].main_txt.size()));
-  layout_[el].main_txt.insert(ec, new_text);
+  assert(ec <= static_cast<int>(layout_[el].main_text.size()));
+  layout_[el].main_text.insert(ec, new_text);
   init_from_layout();
 }
 
@@ -531,40 +531,40 @@ bool Logical_Line::split_after(typename TT_List::iterator frag,
     export_beg = layout_.insert(layout_insert, layout_[split_line]);
 
     /* cleanup the source: if there is a right_space, expand it to cover the
-     characters being erased from main_txt, in order to preserve trailing
+     characters being erased from main_text, in order to preserve trailing
      comment alignment */
     size_t erase_start_pos = frag->mt_end_col_;
-    if (!layout_[split_line].right_txt.empty()) {
+    if (!layout_[split_line].right_text.empty()) {
       size_t const new_size = layout_[split_line].right_space.size() +
-                              layout_[split_line].main_txt.size() -
+                              layout_[split_line].main_text.size() -
                               erase_start_pos;
       layout_[split_line].right_space.assign(new_size, ' ');
     }
-    /* cleanup the source: remove main_txt past the end of frag */
-    layout_[split_line].main_txt.erase(erase_start_pos);
+    /* cleanup the source: remove main_text past the end of frag */
+    layout_[split_line].main_text.erase(erase_start_pos);
 
     /* cleanup the source: remove any trailing ampersand continuations */
     layout_[split_line].make_uncontinued();
 
-    /* clean new: remove main_txt before start of frag */
-    export_beg->main_txt.erase(0, lr_beg->mt_begin_col_);
+    /* clean new: remove main_text before start of frag */
+    export_beg->main_text.erase(0, lr_beg->mt_begin_col_);
 
-    /* clean new: remove right_txt comment, and recover trailing ampersand, if
+    /* clean new: remove right_text comment, and recover trailing ampersand, if
        needed */
     if (export_beg->is_continued()) {
-      export_beg->right_txt = '&';
+      export_beg->right_text = '&';
       size_t const new_rs =
-          export_beg->right_txt.size() + lr_beg->mt_begin_col_ - 1;
+          export_beg->right_text.size() + lr_beg->mt_begin_col_ - 1;
       if (export_beg->right_space.size() != new_rs) {
         export_beg->right_space.assign(new_rs, ' ');
       }
     } else {
       export_beg->right_space.clear();
-      export_beg->right_txt.clear();
+      export_beg->right_text.clear();
     }
 
-    /* clean new: remove left_txt */
-    export_beg->left_txt.clear();
+    /* clean new: remove left_text */
+    export_beg->left_text.clear();
     /* clean new: indent column */
     export_beg->set_leading_spaces(num_left_sp);
 
@@ -593,13 +593,13 @@ bool Logical_Line::split_after(typename TT_List::iterator frag,
     /* skip comments */
     auto non_trivial = export_beg;
     while (non_trivial != layout_.end() && non_trivial->is_trivial()) {
-      if (non_trivial->left_txt.empty()) {
+      if (non_trivial->left_text.empty()) {
         non_trivial->left_space.assign(num_left_sp, ' ');
       }
       non_trivial = std::next(non_trivial);
     }
     if (non_trivial != layout_.end()) {
-      non_trivial->left_txt.clear();
+      non_trivial->left_text.clear();
       non_trivial->set_leading_spaces(num_left_sp);
     }
   }
@@ -620,7 +620,7 @@ bool Logical_Line::split_after(typename TT_List::iterator frag,
                            std::make_move_iterator(lr_beg),
                            std::make_move_iterator(fragments_.end()));
 
-  /* update the main_txt line numbers for the new fragments  */
+  /* update the main_text line numbers for the new fragments  */
   int const move_up = new_ll.fragments_.front().mt_begin_line_;
   for (auto &tt : new_ll.fragments_) {
     tt.mt_begin_line_ -= move_up;
@@ -813,21 +813,21 @@ void Logical_Line::tokenize(Line_Accum const &la) {
 void Logical_Line::append_comment(std::string const &comment_text) {
   if (comment_text.empty())
     return;
-  if (layout_[0].right_txt.empty()) {
-    int lline_len = layout_[0].main_first_col() + layout_[0].main_txt.size();
+  if (layout_[0].right_text.empty()) {
+    int lline_len = layout_[0].main_first_col() + layout_[0].main_text.size();
     int c_len = 2 + comment_text.size();
     if (72 - c_len > lline_len)
       layout_[0].right_space = std::string(72 - c_len - lline_len, ' ');
     else
       layout_[0].right_space = "    ";
-    layout_[0].right_txt = "! ";
-    layout_[0].right_txt.append(comment_text);
+    layout_[0].right_text = "! ";
+    layout_[0].right_text.append(comment_text);
   } else {
-    if (layout_[0].right_txt.find('!') == std::string::npos)
-      layout_[0].right_txt.append(" ! ");
+    if (layout_[0].right_text.find('!') == std::string::npos)
+      layout_[0].right_text.append(" ! ");
     else
-      layout_[0].right_txt.append(" : ");
-    layout_[0].right_txt.append(comment_text);
+      layout_[0].right_text.append(" : ");
+    layout_[0].right_text.append(comment_text);
   }
 }
 

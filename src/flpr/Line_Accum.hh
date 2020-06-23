@@ -22,15 +22,15 @@
 namespace FLPR {
 //! A helper class for determining token offsets
 /*! For a given Logical_Line, the flex scanner is given a string that is the
-  concatenation of the main_txt field of File_Lines.  Flex reports the starting
+  concatenation of the main_text field of File_Lines.  Flex reports the starting
   position of tokens as an offset into its input string. This class accumulates
   the string for the scanner, and provides translations from the flex starting
   location back to file and layout_ line and column numbers. */
 class Line_Accum {
 public:
-  //! Add a main_txt string to the accumulator.
+  //! Add a main_text string to the accumulator.
   void add_line(int const file_lineno, int const num_left_spaces,
-                int const main_txt_file_colno, std::string const &main_txt,
+                int const main_text_file_colno, std::string const &main_text,
                 int const num_right_spaces);
 
   //! Return the file line and column
@@ -41,13 +41,13 @@ public:
   */
   bool linecolno(int accum_offset, int &lineno, int &colno) const;
 
-  //! Return the file line and column, and offsets into main_txt
+  //! Return the file line and column, and offsets into main_text
   /*!
     \param[in]  offset     The offset returned by yylex
     \param[out] lineno     The (index 1) line number in the input file
     \param[out] colno      The (index 1) column number in the input file
-    \param[out] txt_lineno The (index 0) main_txt line number
-    \param[out] txt_colno  The (index 0) main_txt column number
+    \param[out] txt_lineno The (index 0) main_text line number
+    \param[out] txt_colno  The (index 0) main_text column number
   */
   bool linecolno(int accum_offset, int &lineno, int &colno, int &txt_lineno,
                  int &txt_colno) const;
