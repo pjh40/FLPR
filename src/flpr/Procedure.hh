@@ -197,7 +197,7 @@ public:
   }
 
   //! Insert new text after a fragment
-  void insert_text_after(Region_Iterator pos, TT_SEQ::iterator frag,
+  void insert_text_after(Region_Iterator pos, TT_List::iterator frag,
                          std::string const &new_text) {
     file_.logical_file().insert_text_after(pos, frag, new_text);
   }

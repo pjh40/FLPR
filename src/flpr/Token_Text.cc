@@ -39,11 +39,11 @@ std::ostream &operator<<(std::ostream &os, Token_Text const &tt) {
          << ')';
 }
 
-void render(std::ostream &os, TT_SEQ::const_iterator beg,
-            TT_SEQ::const_iterator end) {
+void render(std::ostream &os, TT_List::const_iterator beg,
+            TT_List::const_iterator end) {
   if (beg == end)
     return;
-  TT_SEQ::const_iterator next = std::next(beg);
+  TT_List::const_iterator next = std::next(beg);
   for (; next != end; ++beg, ++next) {
     os << beg->text();
     int spaces = std::max(beg->post_spaces(), next->pre_spaces());
@@ -53,7 +53,8 @@ void render(std::ostream &os, TT_SEQ::const_iterator beg,
   os << beg->text();
 }
 
-void unkeyword(TT_SEQ::iterator beg, const TT_SEQ::iterator end, int first_N) {
+void unkeyword(TT_List::iterator beg, const TT_List::iterator end,
+               int first_N) {
   while (beg != end && first_N--) {
     if (Syntax_Tags::is_keyword(beg->token))
       beg->token = Syntax_Tags::TK_NAME;

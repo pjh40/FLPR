@@ -103,7 +103,7 @@ public:
                            std::string const &new_txt);
 
   //! Insert some text after a fragment and regen
-  void insert_text_after(LL_STMT_SEQ::iterator stmt, TT_SEQ::iterator frag,
+  void insert_text_after(LL_STMT_SEQ::iterator stmt, TT_List::iterator frag,
                          std::string const &new_text);
 
   //! Append some text to the end of stmt and regen

@@ -100,15 +100,15 @@ private:
   modifications, unless you have an iterator to an element that gets
   erased).
 */
-using TT_SEQ = FLPR::Safe_List<Token_Text>;
+using TT_List = FLPR::Safe_List<Token_Text>;
 //! A range of Token_Text
 using TT_Range = FLPR::SL_Range<Token_Text>;
 
-void unkeyword(TT_SEQ::iterator beg, const TT_SEQ::iterator end,
+void unkeyword(TT_List::iterator beg, const TT_List::iterator end,
                int first_N = -1);
 std::ostream &operator<<(std::ostream &os, Token_Text const &tt);
 
-void render(std::ostream &os, TT_SEQ::const_iterator beg,
-            TT_SEQ::const_iterator end);
+void render(std::ostream &os, TT_List::const_iterator beg,
+            TT_List::const_iterator end);
 } // namespace FLPR
 #endif

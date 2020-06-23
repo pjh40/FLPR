@@ -37,8 +37,8 @@ Logical_Line::Logical_Line(Logical_Line const &src) noexcept
       num_semicolons_{src.num_semicolons_}, layout_{src.layout_},
       fragments_{src.fragments_}, stmts_{src.stmts_} {
   // Now we need to update the iterators in stmts_ to point to new fragments
-  TT_SEQ::iterator dstb{fragments_.begin()};
-  TT_SEQ::const_iterator srcb{src.fragments_.cbegin()};
+  TT_List::iterator dstb{fragments_.begin()};
+  TT_List::const_iterator srcb{src.fragments_.cbegin()};
   std::transform(src.stmts_.begin(), src.stmts_.end(), stmts_.begin(),
                  [srcb, dstb](auto r) { return rebase(srcb, r, dstb); });
 }
@@ -56,8 +56,8 @@ Logical_Line &Logical_Line::operator=(Logical_Line const &src) noexcept {
   num_semicolons_ = src.num_semicolons_;
 
   // Now we need to update the iterators in stmts to point to new fragments
-  TT_SEQ::iterator dstb{fragments_.begin()};
-  TT_SEQ::const_iterator srcb{src.fragments_.cbegin()};
+  TT_List::iterator dstb{fragments_.begin()};
+  TT_List::const_iterator srcb{src.fragments_.cbegin()};
   std::transform(src.stmts_.begin(), src.stmts_.end(), stmts_.begin(),
                  [srcb, dstb](auto r) { return rebase(srcb, r, dstb); });
   return *this;
@@ -306,7 +306,7 @@ void Logical_Line::text_from_frags() noexcept {
 }
 
 /* ------------------------------------------------------------------------ */
-void Logical_Line::replace_fragment(typename TT_SEQ::iterator frag,
+void Logical_Line::replace_fragment(typename TT_List::iterator frag,
                                     int const new_syntag,
                                     std::string const &new_text) {
 
@@ -332,7 +332,7 @@ void Logical_Line::replace_fragment(typename TT_SEQ::iterator frag,
 }
 
 /* ------------------------------------------------------------------------ */
-void Logical_Line::remove_fragment(typename TT_SEQ::iterator frag) {
+void Logical_Line::remove_fragment(typename TT_List::iterator frag) {
 
   auto const old_text_len = frag->text().size();
 
@@ -468,7 +468,7 @@ void Logical_Line::replace_stmt_substr(TT_Range const &orig,
 }
 
 /* ------------------------------------------------------------------------ */
-void Logical_Line::insert_text_before(typename TT_SEQ::iterator frag,
+void Logical_Line::insert_text_before(typename TT_List::iterator frag,
                                       std::string const &new_text) {
   int sl, sc;
   if (frag == fragments_.end()) {
@@ -486,7 +486,7 @@ void Logical_Line::insert_text_before(typename TT_SEQ::iterator frag,
 }
 
 /* ------------------------------------------------------------------------ */
-void Logical_Line::insert_text_after(typename TT_SEQ::iterator frag,
+void Logical_Line::insert_text_after(typename TT_List::iterator frag,
                                      std::string const &new_text) {
   int el, ec;
   assert(frag != fragments_.end());
@@ -500,7 +500,7 @@ void Logical_Line::insert_text_after(typename TT_SEQ::iterator frag,
 }
 
 /* ------------------------------------------------------------------------ */
-bool Logical_Line::split_after(typename TT_SEQ::iterator frag,
+bool Logical_Line::split_after(typename TT_List::iterator frag,
                                Logical_Line &new_ll) {
   if (frag == fragments_.end())
     return false;
@@ -643,7 +643,7 @@ bool Logical_Line::split_after(typename TT_SEQ::iterator frag,
 bool Logical_Line::remove_empty_statements() {
   bool changed{false};
 
-  TT_SEQ::iterator tt = fragments_.begin();
+  TT_List::iterator tt = fragments_.begin();
   while (tt != fragments_.end() && tt->token == Syntax_Tags::TK_SEMICOLON)
     ++tt;
   if (tt != fragments_.begin()) {

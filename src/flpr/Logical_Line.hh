@@ -51,8 +51,8 @@ enum LineCat {
 */
 class Logical_Line {
 public:
-  using iterator = TT_SEQ::iterator;
-  using const_iterator = TT_SEQ::const_iterator;
+  using iterator = TT_List::iterator;
+  using const_iterator = TT_List::const_iterator;
   using FL_VEC = std::vector<File_Line>;
   using STMT_VEC = std::vector<TT_Range>;
 
@@ -109,13 +109,13 @@ public:
   constexpr FL_VEC const &layout() const noexcept { return layout_; }
 
   //! Non-const fragments accessor
-  constexpr TT_SEQ &fragments() noexcept { return fragments_; }
+  constexpr TT_List &fragments() noexcept { return fragments_; }
 
   //! Const fragments accessor
-  constexpr TT_SEQ const &fragments() const noexcept { return fragments_; }
+  constexpr TT_List const &fragments() const noexcept { return fragments_; }
 
   //! Another const fragments accessor
-  constexpr TT_SEQ const &cfragments() const noexcept { return fragments_; }
+  constexpr TT_List const &cfragments() const noexcept { return fragments_; }
 
   //! Const statements accessor
   constexpr STMT_VEC const &stmts() const noexcept { return stmts_; }
@@ -141,11 +141,11 @@ public:
   void text_from_frags() noexcept;
 
   //! Replace the syntax_tag and text in a fragment, updating everything
-  void replace_fragment(typename TT_SEQ::iterator frag, int const new_syntag,
+  void replace_fragment(typename TT_List::iterator frag, int const new_syntag,
                         std::string const &new_text);
 
   //! Remove the fragment, updating everything
-  void remove_fragment(typename TT_SEQ::iterator frag);
+  void remove_fragment(typename TT_List::iterator frag);
 
   //! Replace the main_txt in a Logical_Line
   void replace_main_text(std::vector<std::string> const &new_text);
@@ -156,14 +156,14 @@ public:
   bool remove_empty_statements();
 
   //! Break a Logical_Line in two after frag text.
-  bool split_after(typename TT_SEQ::iterator frag, Logical_Line &new_ll);
+  bool split_after(typename TT_List::iterator frag, Logical_Line &new_ll);
 
   //! Add new text before frag, and reinitialize
-  void insert_text_before(typename TT_SEQ::iterator frag,
+  void insert_text_before(typename TT_List::iterator frag,
                           std::string const &new_text);
 
   //! Add new text after frag, and reinitialize
-  void insert_text_after(typename TT_SEQ::iterator frag,
+  void insert_text_after(typename TT_List::iterator frag,
                          std::string const &new_text);
 
   //! Standard output
@@ -249,7 +249,7 @@ private:
   FL_VEC layout_;
 
   //! tokenized version of the Fortran text
-  TT_SEQ fragments_;
+  TT_List fragments_;
 
   //! Ranges of Token_Text making up individual non-empty Fortran statements
   /*! This variable is established by init_stmts().  Note that stmts.size() == 1

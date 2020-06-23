@@ -30,7 +30,7 @@ bool test_simple_1() {
   TEST_INT(ll.layout().size(), 1);
   TEST_INT(ll.fragments().size(), 4);
 
-  FLPR::TT_SEQ::const_iterator curr = ll.cfragments().begin();
+  FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
   TEST_TOK(KW_SUBROUTINE, curr->token);
   TEST_STR("subROUTINE", curr->text());
 
@@ -51,7 +51,7 @@ bool test_simple_1() {
 
 bool offsets_1() {
   Logical_Line ll("call bar()");
-  FLPR::TT_SEQ::const_iterator curr = ll.cfragments().begin();
+  FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
   TEST_INT(curr->main_txt_line(), 0);
   TEST_INT(curr->main_txt_col(), 0);
   TEST_INT(curr->start_pos, 1);
@@ -72,7 +72,7 @@ bool offsets_1() {
 
 bool offsets_2() {
   Logical_Line ll("      call bar()");
-  FLPR::TT_SEQ::const_iterator curr = ll.cfragments().begin();
+  FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
   TEST_INT(curr->main_txt_col(), 0);
   TEST_INT(curr->start_pos, 7);
   std::advance(curr, 1);
@@ -90,7 +90,7 @@ bool offsets_2() {
 bool offsets_3() {
   Logical_Line ll("10    call bar()");
   TEST_INT(ll.label, 10);
-  FLPR::TT_SEQ::const_iterator curr = ll.cfragments().begin();
+  FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
   TEST_INT(curr->start_pos, 7);
   std::advance(curr, 1);
   TEST_INT(curr->start_pos, 12);
@@ -104,7 +104,7 @@ bool offsets_3() {
 bool offsets_4() {
   Logical_Line ll("   10 call bar()");
   TEST_INT(ll.label, 10);
-  FLPR::TT_SEQ::const_iterator curr = ll.cfragments().begin();
+  FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
   TEST_INT(curr->start_pos, 7);
   std::advance(curr, 1);
   TEST_INT(curr->start_pos, 12);
@@ -118,7 +118,7 @@ bool offsets_4() {
 bool offsets_5() {
   Logical_Line ll("       10 call bar()");
   TEST_INT(ll.label, 10);
-  FLPR::TT_SEQ::const_iterator curr = ll.cfragments().begin();
+  FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
   TEST_INT(curr->start_pos, 11);
   std::advance(curr, 1);
   TEST_INT(curr->start_pos, 16);
@@ -131,7 +131,7 @@ bool offsets_5() {
 
 bool offsets_6() {
   Logical_Line ll("      call bar()", 0);
-  FLPR::TT_SEQ::const_iterator curr = ll.cfragments().begin();
+  FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
   TEST_INT(curr->start_pos, 7);
   std::advance(curr, 1);
   TEST_INT(curr->start_pos, 12);
@@ -145,7 +145,7 @@ bool offsets_6() {
 bool offsets_7() {
   Logical_Line ll("10    call bar()", 0);
   TEST_INT(ll.label, 10);
-  FLPR::TT_SEQ::const_iterator curr = ll.cfragments().begin();
+  FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
   TEST_INT(curr->start_pos, 7);
   std::advance(curr, 1);
   TEST_INT(curr->start_pos, 12);
@@ -159,7 +159,7 @@ bool offsets_7() {
 bool offsets_8() {
   Logical_Line ll("   10 call bar()", 0);
   TEST_INT(ll.label, 10);
-  FLPR::TT_SEQ::const_iterator curr = ll.cfragments().begin();
+  FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
   TEST_INT(curr->start_pos, 7);
   std::advance(curr, 1);
   TEST_INT(curr->start_pos, 12);
@@ -172,13 +172,13 @@ bool offsets_8() {
 
 bool replace_fragment_1() {
   Logical_Line ll("   call bar()");
-  FLPR::TT_SEQ::iterator name = std::next(ll.fragments().begin());
+  FLPR::TT_List::iterator name = std::next(ll.fragments().begin());
   TEST_STR("bar", name->text());
   ll.replace_fragment(name, FLPR::Syntax_Tags::TK_NAME,
                       std::string{"longer_bar"});
   TEST_STR("longer_bar", name->text());
 
-  FLPR::TT_SEQ::const_iterator curr = ll.cfragments().begin();
+  FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
   TEST_INT(curr->main_txt_line(), 0);
   TEST_INT(curr->main_txt_col(), 0);
 
@@ -198,12 +198,12 @@ bool replace_fragment_1() {
 
 bool replace_fragment_2() {
   Logical_Line ll("   call bar()");
-  FLPR::TT_SEQ::iterator name = std::next(ll.fragments().begin());
+  FLPR::TT_List::iterator name = std::next(ll.fragments().begin());
   TEST_STR("bar", name->text());
   ll.replace_fragment(name, FLPR::Syntax_Tags::TK_NAME, std::string{"b"});
   TEST_STR("b", name->text());
 
-  FLPR::TT_SEQ::const_iterator curr = ll.cfragments().begin();
+  FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
   TEST_INT(curr->main_txt_line(), 0);
   TEST_INT(curr->main_txt_col(), 0);
 
@@ -225,7 +225,7 @@ bool split_after_0() {
   Logical_Line ll("   call bar  ! comment");
   Logical_Line remain;
 
-  FLPR::TT_SEQ::iterator tt = std::next(ll.fragments().begin());
+  FLPR::TT_List::iterator tt = std::next(ll.fragments().begin());
   /* Shouldn't generate empty lines... */
   TEST_FALSE(ll.split_after(tt, remain));
 
@@ -247,7 +247,7 @@ bool split_after_1() {
   Logical_Line ll("call bar");
   Logical_Line remain;
 
-  FLPR::TT_SEQ::iterator tt = ll.fragments().begin();
+  FLPR::TT_List::iterator tt = ll.fragments().begin();
   TEST_TRUE(ll.split_after(tt, remain));
 
   TEST_INT(ll.fragments().size(), 1);
@@ -282,7 +282,7 @@ bool split_after_2() {
   Logical_Line ll("call  bar    ! foo");
   Logical_Line remain;
 
-  FLPR::TT_SEQ::iterator tt = ll.fragments().begin();
+  FLPR::TT_List::iterator tt = ll.fragments().begin();
   TEST_TRUE(ll.split_after(tt, remain));
 
   TEST_INT(ll.fragments().size(), 1);
@@ -317,7 +317,7 @@ bool split_after_3() {
   Logical_Line ll("   call  bar    ! foo");
   Logical_Line remain;
 
-  FLPR::TT_SEQ::iterator tt = ll.fragments().begin();
+  FLPR::TT_List::iterator tt = ll.fragments().begin();
   TEST_TRUE(ll.split_after(tt, remain));
 
   TEST_INT(ll.fragments().size(), 1);
@@ -351,7 +351,7 @@ bool split_after_4() {
   Logical_Line ll(" 2 call  bar    ! foo");
   Logical_Line remain;
 
-  FLPR::TT_SEQ::iterator tt = ll.fragments().begin();
+  FLPR::TT_List::iterator tt = ll.fragments().begin();
   TEST_TRUE(ll.split_after(tt, remain));
 
   TEST_INT(ll.fragments().size(), 1);
@@ -386,7 +386,7 @@ bool split_after_5() {
   Logical_Line ll("   call bar;a=a+1!hey");
   Logical_Line remain;
 
-  FLPR::TT_SEQ::iterator tt = std::next(ll.fragments().begin());
+  FLPR::TT_List::iterator tt = std::next(ll.fragments().begin());
   TEST_TRUE(ll.split_after(tt, remain));
   TEST_INT(ll.fragments().size(), 2);
   TEST_TOK(KW_CALL, ll.fragments().front().token);
@@ -426,7 +426,7 @@ bool split_after_6() {
   Logical_Line &ll{ls.lines().front()};
   Logical_Line remain;
 
-  FLPR::TT_SEQ::iterator tt = ll.fragments().begin();
+  FLPR::TT_List::iterator tt = ll.fragments().begin();
   std::advance(tt, 5);
   TEST_TOK(TK_PARENR, tt->token);
   TEST_TRUE(ll.split_after(tt, remain));
@@ -474,7 +474,7 @@ bool split_after_7() {
   TEST_INT(ll.layout().size(), 3);
 
   Logical_Line remain;
-  FLPR::TT_SEQ::iterator tt = ll.fragments().begin();
+  FLPR::TT_List::iterator tt = ll.fragments().begin();
   std::advance(tt, 6);
   TEST_TOK(TK_NAME, tt->token);
   TEST_TRUE(ll.split_after(tt, remain));
@@ -573,7 +573,7 @@ bool continued_if() {
                                "     &            f"},
       0);
 
-  FLPR::TT_SEQ::const_iterator curr = ll.cfragments().begin();
+  FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
   std::advance(curr, 14);
   TEST_STR("exit", curr->text());
   TEST_INT(ll.fragments().size(), 16);
@@ -593,7 +593,7 @@ bool continued_if_fixed_string() {
       0);
   /* Note that we accept text beyond column 72 */
   TEST_INT(ll.fragments().size(), 4);
-  FLPR::TT_SEQ::const_iterator curr = ll.cfragments().begin();
+  FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
   std::advance(curr, 3);
   TEST_STR("'abcXXXdef'", curr->text());
   return true;
@@ -604,12 +604,12 @@ bool continued_if_fixed_trunc_string() {
       /* Note that this is a vector of two strings, the first being split
          across two lines of input */
       std::vector<std::string>{"      print *,                          "
-                                 "                            'abcXXX",
+                               "                            'abcXXX",
                                "     1def'"},
       72);
   /* Note that we do NOT accept text beyond column 72 in this example */
   TEST_INT(ll.fragments().size(), 4);
-  FLPR::TT_SEQ::const_iterator curr = ll.cfragments().begin();
+  FLPR::TT_List::const_iterator curr = ll.cfragments().begin();
   std::advance(curr, 3);
   TEST_STR("'abcdef'", curr->text());
   return true;

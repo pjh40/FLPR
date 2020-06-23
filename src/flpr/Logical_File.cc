@@ -436,7 +436,7 @@ void Logical_File::replace_stmt_substr(LL_STMT_SEQ::iterator stmt,
 }
 
 void Logical_File::insert_text_after(LL_STMT_SEQ::iterator stmt,
-                                     TT_SEQ::iterator frag,
+                                     TT_List::iterator frag,
                                      std::string const &new_text) {
   auto const frag_off = std::distance(stmt->begin(), frag);
   isolate_stmt(stmt);
