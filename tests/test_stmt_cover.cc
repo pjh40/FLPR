@@ -367,8 +367,8 @@ bool type_declaration_stmt() {
   TEST_INT(c.node().num_branches(), 2); // type-decl-attr-seq entity-decl-list
   c.down();
   TEST_TAG(c->syntag, SG_TYPE_DECL_ATTR_SEQ);
-  TEST_INT(c.node().num_branches(), 2);  // "INTEGER" "::"
-  
+  TEST_INT(c.node().num_branches(), 2); // "INTEGER" "::"
+
   c.down();
   // INTEGER
   TEST_TAG(c->syntag, SG_DECLARATION_TYPE_SPEC);

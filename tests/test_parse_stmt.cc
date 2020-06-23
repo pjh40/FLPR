@@ -288,7 +288,7 @@ bool event_wait_stmt() {
   TSS(event_wait_stmt, "event wait(evar(i,j))");
   TSS(event_wait_stmt, "event wait(evar(i,j), until_count=3*i+j)");
   TSS(event_wait_stmt, "event wait(evar(i,j), errmsg=errmsg(i),"
-      " stat=stat(j), until_count=3*i+j)");
+                       " stat=stat(j), until_count=3*i+j)");
   return true;
 }
 

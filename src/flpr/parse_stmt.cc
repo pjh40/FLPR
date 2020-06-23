@@ -87,7 +87,7 @@ Stmt_Tree consume_until_break(TT_Stream &ts, int const rule_tag) {
         break;
       }
     }
-    /* See if we can collapse some multi-token sequences that can appear 
+    /* See if we can collapse some multi-token sequences that can appear
        in an expression */
     if (Syntax_Tags::SG_SIGNIFICAND == ts.peek()) {
       root.graft_back(real_literal_constant(ts));

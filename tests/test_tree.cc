@@ -141,7 +141,6 @@ bool graft_back() {
   return true;
 }
 
-
 bool cursor() {
   Tree<int> t{0};
   t.graft_back(Tree<int>{1});
@@ -160,7 +159,6 @@ bool cursor() {
   TEST_FALSE(c.has_prev());
   TEST_FALSE(c.try_next());
 
-
   TEST_TRUE(c.try_down());
   TEST_INT(*c, 1);
   TEST_TRUE(c.has_up());
@@ -169,7 +167,7 @@ bool cursor() {
   TEST_FALSE(c.has_down());
   TEST_TRUE(c.is_leaf());
   TEST_FALSE(c.is_root());
-  
+
   TEST_TRUE(c.try_next());
   TEST_INT(*c, 2);
   TEST_TRUE(c.has_up());
@@ -182,7 +180,7 @@ bool cursor() {
   TEST_FALSE(c.try_next());
   c.up();
   TEST_INT(*c, 0);
-  
+
   return true;
 }
 
@@ -204,7 +202,6 @@ bool const_cursor() {
   TEST_FALSE(c.has_prev());
   TEST_FALSE(c.try_next());
 
-
   TEST_TRUE(c.try_down());
   TEST_INT(*c, 1);
   TEST_TRUE(c.has_up());
@@ -213,7 +210,7 @@ bool const_cursor() {
   TEST_FALSE(c.has_down());
   TEST_TRUE(c.is_leaf());
   TEST_FALSE(c.is_root());
-  
+
   TEST_TRUE(c.try_next());
   TEST_INT(*c, 2);
   TEST_TRUE(c.has_up());
@@ -226,10 +223,9 @@ bool const_cursor() {
   TEST_FALSE(c.try_next());
   c.up();
   TEST_INT(*c, 0);
-  
+
   return true;
 }
-
 
 bool graft_front() {
   auto p1 = std::make_shared<int>(1);
@@ -289,6 +285,6 @@ int main() {
   TEST(graft_front);
   TEST(cursor);
   TEST(const_cursor);
-  
+
   TEST_MAIN_REPORT;
 }

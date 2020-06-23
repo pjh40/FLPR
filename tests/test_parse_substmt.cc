@@ -76,7 +76,7 @@ bool expr() {
 
   {
     LL_Helper l({"a.eq.11.and..not.b.gt.2..or.b"});
-    FLPR::TT_Stream ts{l.stream1()};                                   
+    FLPR::TT_Stream ts{l.stream1()};
     Stmt_Tree st = FLPR::Stmt::expr(ts);
     auto c{st.cursor()};
     TEST_TAG(c->syntag, SG_EXPR);
@@ -119,7 +119,7 @@ bool loop_control() {
   TSS(loop_control, "CONCURRENT (i=a:b:s) LOCAL(x,y,z)");
   TSS(loop_control, "CONCURRENT (i=a:b, temp>100) LOCAL_INIT(x)");
   TSS(loop_control, "CONCURRENT (i=a:b) SHARED(x,y,z)");
-  /* This is a modification to support F2008 forall-header with 
+  /* This is a modification to support F2008 forall-header with
      concurrent-header by dropping the requirement for concurrent-locality */
   TSS(loop_control, "CONCURRENT (i=a:b)");
   return true;
@@ -173,7 +173,7 @@ bool signed_real_literal_constant() {
   TSS(signed_real_literal_constant, "1 .3");
   TSS(signed_real_literal_constant, "1 +.3");
   TSS(signed_real_literal_constant, "1 -.3");
-  
+
   TSS(signed_real_literal_constant, "1 1.e0");
   TSS(signed_real_literal_constant, "1 +1.d0");
   TSS(signed_real_literal_constant, "1 -1.e11");
@@ -203,10 +203,9 @@ bool signed_real_literal_constant() {
   TSS(signed_real_literal_constant, "1 +.3e-1_v");
   TSS(signed_real_literal_constant, "1 -.3e-2_h1");
 
-
   return true;
 }
-  
+
 bool variable() {
   TPS(variable, "a", BAD);
   TPS(variable, "a+", TK_PLUS);
