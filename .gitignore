@@ -1,4 +1,5 @@
 syntax: glob
 *~
+*.bak
 compile_commands.json
 
