@@ -29,7 +29,7 @@ bool LL_Stmt::set_leading_spaces(int const spaces, int const continued_offset) {
   bool changed = false;
 
   if (is_compound() < 2) {
-    for (FLPR::LL_SEQ::iterator ll_it : prefix_lines) {
+    for (FLPR::LL_List::iterator ll_it : prefix_lines) {
       changed |= ll_it->set_leading_spaces(spaces, continued_offset);
     }
     changed |= ll().set_leading_spaces(spaces, continued_offset);

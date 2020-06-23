@@ -28,8 +28,8 @@ using Parse_Tree = typename File::Parse_Tree;
 /* -------------------------------------------------------------------------- */
 
 bool elaborate_end_stmts(File &f);
-bool remove_empty_stmts(typename FLPR::LL_SEQ &ll_seq);
-bool split_compound_stmts(typename FLPR::LL_SEQ &ll_seq);
+bool remove_empty_stmts(typename FLPR::LL_List &ll_seq);
+bool split_compound_stmts(typename FLPR::LL_List &ll_seq);
 
 /* -------------------------------------------------------------------------- */
 
@@ -122,7 +122,7 @@ int flpr_format_file(File &file, Options const &options,
   return 0;
 }
 
-bool remove_empty_stmts(typename FLPR::LL_SEQ &ll_seq) {
+bool remove_empty_stmts(typename FLPR::LL_List &ll_seq) {
   bool changed = false;
   for (FLPR::Logical_Line &ll : ll_seq) {
     if (!ll.has_fortran() && ll.has_empty_statements())
@@ -134,11 +134,11 @@ bool remove_empty_stmts(typename FLPR::LL_SEQ &ll_seq) {
 /* This needs to be updated to take advantage of newer features. As it is, it
    probably corrupts the Token_Text layout position information.  DON'T USE AS
    AN EXAMPLE! */
-bool split_compound_stmts(typename FLPR::LL_SEQ &ll_seq) {
+bool split_compound_stmts(typename FLPR::LL_List &ll_seq) {
   bool changed = false;
   bool cleanup_split = false;
 
-  for (FLPR::LL_SEQ::iterator ll_it = ll_seq.begin(); ll_it != ll_seq.end();
+  for (FLPR::LL_List::iterator ll_it = ll_seq.begin(); ll_it != ll_seq.end();
        ++ll_it) {
 
     if (!ll_it->has_fortran())

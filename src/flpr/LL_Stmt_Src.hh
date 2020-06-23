@@ -20,7 +20,7 @@
 #include <cassert>
 
 namespace FLPR {
-//! Presents an LL_SEQ as a sequence of statements
+//! Presents an LL_List as a sequence of statements
 /*! This is a fairly strange hybrid between an istream and an
     InputIterator.  The similarity to istream comes from the fact that
     we don't know how many elements are going to be presented, so we
@@ -45,14 +45,14 @@ public:
   LL_Stmt_Src &operator=(LL_Stmt_Src &&) = default;
 
   //! Construct a source for the given Logical_Line sequence
-  explicit LL_Stmt_Src(LL_SEQ &ll, bool const do_advance = true)
+  explicit LL_Stmt_Src(LL_List &ll, bool const do_advance = true)
       : it_{ll}, curr_{buf_.end()} {
     if (do_advance)
       advance();
   }
 
   //! Construct a source for a single Logical_Line
-  explicit LL_Stmt_Src(LL_SEQ::iterator ll, bool const do_advance = true)
+  explicit LL_Stmt_Src(LL_List::iterator ll, bool const do_advance = true)
       : it_{ll}, curr_{buf_.end()} {
     if (do_advance)
       advance();

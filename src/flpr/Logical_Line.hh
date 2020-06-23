@@ -259,7 +259,7 @@ private:
 };
 
 //! The type for a sequence of Logical_Line
-using LL_SEQ = Safe_List<Logical_Line>;
+using LL_List = Safe_List<Logical_Line>;
 
 std::ostream &operator<<(std::ostream &os, Logical_Line const &r);
 std::ostream &operator<<(std::ostream &os, const LineCat &l);

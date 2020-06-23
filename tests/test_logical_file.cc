@@ -14,7 +14,7 @@
 #include <iostream>
 #include <sstream>
 
-using FLPR::LL_SEQ;
+using FLPR::LL_List;
 using FLPR::LL_STMT_SEQ;
 using FLPR::Logical_File;
 
@@ -26,7 +26,7 @@ bool replace_stmt_text_1() {
   TEST_INT(file.ll_stmts.size(), 1);
   LL_STMT_SEQ::iterator stmt_it = file.ll_stmts.begin();
   TEST_INT(stmt_it->size(), 1);
-  LL_SEQ::iterator orig_ll_it = stmt_it->it();
+  LL_List::iterator orig_ll_it = stmt_it->it();
   file.replace_stmt_text(stmt_it, {"RETURN"},
                          FLPR::Syntax_Tags::SG_RETURN_STMT);
   TEST_INT(file.ll_stmts.size(), 1);

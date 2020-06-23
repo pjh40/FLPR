@@ -22,7 +22,7 @@ namespace FLPR {
 //! Identify a range of elements in the fragments of a particular Logical_Line
 class LL_TT_Range : public TT_Range {
 public:
-  using LL_IT = LL_SEQ::iterator;
+  using LL_IT = LL_List::iterator;
 
   LL_TT_Range() : TT_Range(), ll_set_{false} {}
   LL_TT_Range(LL_TT_Range const &) = default;

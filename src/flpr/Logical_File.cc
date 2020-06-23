@@ -356,10 +356,10 @@ LL_STMT_SEQ::iterator Logical_File::emplace_ll_stmt(LL_STMT_SEQ::iterator pos,
 
   /* Either this statement is on its own, or is the first compound.  Either
      way, we can insert a Logical_Line directly above the prefix */
-  LL_SEQ::iterator ll_insert_pos = pos->prefix_ll_begin();
+  LL_List::iterator ll_insert_pos = pos->prefix_ll_begin();
 
   /* Insert a Logical_Line to hold the new statement at the correct position */
-  LL_SEQ::iterator ll_new = lines.emplace(ll_insert_pos, std::move(ll));
+  LL_List::iterator ll_new = lines.emplace(ll_insert_pos, std::move(ll));
 
   /* Insert and record the iterator to the new statement */
   LL_Stmt_Src ss{ll_new, true};
@@ -380,9 +380,9 @@ Logical_File::emplace_ll_stmt_after_prefix(LL_STMT_SEQ::iterator pos,
 
   /* As this stmt has a prefix, it must be on its own */
   assert(pos->is_compound() < 2);
-  LL_SEQ::iterator ll_insert_pos = pos->prefix_ll_end();
+  LL_List::iterator ll_insert_pos = pos->prefix_ll_end();
   /* Insert a Logical_Line to hold the new statement at the correct position */
-  LL_SEQ::iterator ll_new = lines.emplace(ll_insert_pos, std::move(ll));
+  LL_List::iterator ll_new = lines.emplace(ll_insert_pos, std::move(ll));
 
   /* Insert and record the iterator to the first new statement */
   LL_Stmt_Src ss{ll_new, true};

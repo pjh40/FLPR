@@ -69,8 +69,8 @@ public:
   constexpr Logical_File const &logical_file() const noexcept {
     return logical_file_;
   }
-  constexpr LL_SEQ &logical_lines() noexcept { return logical_file_.lines; }
-  constexpr LL_SEQ const &logical_lines() const noexcept {
+  constexpr LL_List &logical_lines() noexcept { return logical_file_.lines; }
+  constexpr LL_List const &logical_lines() const noexcept {
     return logical_file_.lines;
   }
 

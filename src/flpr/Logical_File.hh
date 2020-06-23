@@ -32,8 +32,8 @@ public:
   //! Container for raw text lines of a file
   using Line_Buf = std::vector<std::string>;
   //! Type for the container of lines
-  using const_iterator = typename LL_SEQ::const_iterator;
-  using iterator = typename LL_SEQ::iterator;
+  using const_iterator = typename LL_List::const_iterator;
+  using iterator = typename LL_List::iterator;
 
   constexpr Logical_File() : has_flpr_pp{false}, num_input_lines{0} {}
   Logical_File(Logical_File &&) = default;
@@ -120,7 +120,7 @@ public:
   //! Basic information about the input file
   std::shared_ptr<File_Info> file_info;
   //! The scanned Logical_Lines
-  LL_SEQ lines;
+  LL_List lines;
   //! The LL_Stmt's associated with lines
   LL_STMT_SEQ ll_stmts;
   //! True if read_and_scan found FLPR preprocessor lines

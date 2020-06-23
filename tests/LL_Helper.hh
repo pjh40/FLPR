@@ -30,7 +30,7 @@ public:
   FLPR::TT_Stream stream1() noexcept {
     return FLPR::TT_Stream{text_.ll_stmts.front()};
   }
-  constexpr FLPR::LL_SEQ &lines() { return text_.lines; }
+  constexpr FLPR::LL_List &lines() { return text_.lines; }
   constexpr FLPR::LL_STMT_SEQ &ll_stmts() { return text_.ll_stmts; }
   //! dump the contents of the Logical_File
   std::ostream &print(std::ostream &os) const;
