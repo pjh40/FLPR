@@ -29,30 +29,37 @@ struct File {
   Parse_Tree parse_tree;
 };
 
-bool read_file(std::string const &filename, std::vector<File> &files);
+bool read_file(std::string const &filename, std::vector<File> &files,
+               bool const col72);
 bool parse_cmd_line(std::vector<std::string> &filenames, int argc,
-                    char *const argv[]);
+                    char *const argv[], bool &col72);
 
 int main(int argc, char *const argv[]) {
   std::vector<std::string> filenames;
-  if (!parse_cmd_line(filenames, argc, argv)) {
+  bool col72{false};
+
+  if (!parse_cmd_line(filenames, argc, argv, col72)) {
+    std::cerr << "Usage: parse_files [-c] {-f <filename> | <filename>+}\n";
+    std::cerr << "\t-c\t\tenforce 72-column limit in fixed format\n";
+    std::cerr << "\t-f\t\tprovide a list of files to process\n";
     std::cerr << "exiting on error." << std::endl;
     return 1;
   }
 
   std::vector<File> files;
   for (auto const &f : filenames) {
-    read_file(f, files);
+    read_file(f, files, col72);
   }
   std::cout << "done." << std::endl;
   return 0;
 }
 
-bool read_file(std::string const &filename, std::vector<File> &files) {
+bool read_file(std::string const &filename, std::vector<File> &files,
+               bool const col72) {
   File f;
   std::cout << "Processing: '" << filename << "'"
             << "\n\tscanning..." << std::endl;
-  if (!f.logical_file.read_and_scan(filename, 0)) {
+  if (!f.logical_file.read_and_scan(filename, (col72) ? 72 : 0)) {
     std::cout << "\tread/scan FAILED" << std::endl;
     return false;
   }
@@ -95,13 +102,20 @@ bool file_list_from_file(std::vector<std::string> &filenames,
 }
 
 bool parse_cmd_line(std::vector<std::string> &filenames, int argc,
-                    char *const argv[]) {
+                    char *const argv[], bool &col72) {
   int ch;
-  while ((ch = getopt(argc, argv, "f:")) != -1) {
+  bool has_filelist{false};
+  col72 = false;
+
+  while ((ch = getopt(argc, argv, "cf:")) != -1) {
     switch (ch) {
+    case 'c':
+      col72 = true;
+      break;
     case 'f':
       if (!file_list_from_file(filenames, optarg))
         return false;
+      has_filelist = true;
       break;
     default:
       std::cerr << "unknown option" << std::endl;
@@ -110,6 +124,10 @@ bool parse_cmd_line(std::vector<std::string> &filenames, int argc,
   }
   argc -= optind;
   argv += optind;
+  if (!has_filelist && argc == 0) {
+    std::cerr << "need to specify at least one input file." << std::endl;
+    return false;
+  }
   for (int i = 0; i < argc; ++i) {
     filenames.emplace_back(std::string{argv[i]});
   }
