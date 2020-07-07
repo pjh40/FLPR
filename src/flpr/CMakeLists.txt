@@ -64,6 +64,7 @@ set(flpr_headers
   Stmt_Tree.hh
   Syntax_Tags.hh
   Syntax_Tags_Defs.hh
+  Text_Flow.hh
   TT_Stream.hh
   Token_Text.hh
   Tree.hh
