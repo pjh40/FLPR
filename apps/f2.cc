@@ -13,6 +13,7 @@ enum struct Type {
   FIXED_CONTROL,
   FREE_CONTROL,
   PINNED,
+  PREPROCESSOR,
   SEGMENT,
   SPACES,
   TAB,
@@ -23,6 +24,7 @@ struct Command;
 struct Fixed_Control;
 struct Free_Control;
 struct Pinned;
+struct Preprocessor;
 struct Segment;
 struct Spaces;
 struct Tab;
@@ -32,6 +34,7 @@ struct Visitor {
   virtual void visit(Fixed_Control &) {}
   virtual void visit(Free_Control &) {}
   virtual void visit(Pinned &) {}
+  virtual void visit(Preprocessor &) {}
   virtual void visit(Segment &) {}
   virtual void visit(Spaces &) {}
   virtual void visit(Tab &) {}
@@ -42,6 +45,7 @@ struct Const_Visitor {
   virtual void visit(Fixed_Control const &) {}
   virtual void visit(Free_Control const &) {}
   virtual void visit(Pinned const &) {}
+  virtual void visit(Preprocessor const &) {}
   virtual void visit(Segment const &) {}
   virtual void visit(Spaces const &) {}
   virtual void visit(Tab const &) {}
@@ -182,6 +186,21 @@ public:
   unsigned col;
 };
 
+//! Preprocessor directive
+struct Preprocessor : public Entity<Preprocessor> {
+  Preprocessor() : Entity{Type::PREPROCESSOR}, text{} {}
+  explicit Preprocessor(std::string const &txt)
+      : Entity{Type::PREPROCESSOR}, text{txt} {}
+  explicit Preprocessor(std::string &&txt)
+      : Entity{Type::PREPROCESSOR}, text{std::move(txt)} {}
+  std::ostream &print(std::ostream &os) const override {
+    return os << '"' << text << '"';
+  }
+
+public:
+  std::string text;
+};
+
 /*! A chunk of text.  Segments are assembled together to create Tokens */
 struct Segment : public Entity<Segment> {
   Segment() : Entity{Type::SEGMENT}, text{} {}
@@ -258,6 +277,9 @@ struct Render : public Text_Flow::Const_Visitor {
     pad_to_col(e.col);
     curr_line += e.text;
   }
+  void visit(Text_Flow::Preprocessor const &e) override {
+    curr_line = e.text;
+  }
   void visit(Text_Flow::Segment const &e) override { curr_line += e.text; }
   void visit(Text_Flow::Spaces const &e) override {
     curr_line.append(e.n, ' ');
@@ -287,6 +309,14 @@ int main(int argc, char const **argv) {
   text_flow.emplace_back(
       std::make_unique<Text_Flow::Command>(Text_Flow::Command::CMD::NEW_LINE));
 
+  text_flow.emplace_back(std::make_unique<Text_Flow::Pinned>("! comment", 1));
+  text_flow.emplace_back(
+      std::make_unique<Text_Flow::Command>(Text_Flow::Command::CMD::NEW_LINE));
+  
+  text_flow.emplace_back(std::make_unique<Text_Flow::Pinned>("! comment", 7));
+  text_flow.emplace_back(
+      std::make_unique<Text_Flow::Command>(Text_Flow::Command::CMD::NEW_LINE));
+
   text_flow.emplace_back(std::make_unique<Text_Flow::Fixed_Control>(99, false));
   text_flow.emplace_back(std::make_unique<Text_Flow::Tab>(7));
   text_flow.emplace_back(std::make_unique<Text_Flow::Segment>("call"));
@@ -306,6 +336,13 @@ int main(int argc, char const **argv) {
   text_flow.emplace_back(std::make_unique<Text_Flow::Segment>(")"));
   text_flow.emplace_back(
       std::make_unique<Text_Flow::Command>(Text_Flow::Command::CMD::EOS));
+  text_flow.emplace_back(
+      std::make_unique<Text_Flow::Command>(Text_Flow::Command::CMD::NEW_LINE));
+  text_flow.emplace_back(
+      std::make_unique<Text_Flow::Command>(Text_Flow::Command::CMD::NEW_LINE));
+  text_flow.emplace_back(std::make_unique<Text_Flow::Preprocessor>("#undef foo"));
+  text_flow.emplace_back(
+      std::make_unique<Text_Flow::Command>(Text_Flow::Command::CMD::NEW_LINE));
   text_flow.emplace_back(
       std::make_unique<Text_Flow::Command>(Text_Flow::Command::CMD::NEW_LINE));
 
