@@ -247,7 +247,7 @@ struct Render : public Text_Flow::Const_Visitor {
   }
   void visit(Text_Flow::Free_Control const &e) override {
     fixed_format = false;
-    curr_line == e.text;
+    curr_line = e.text;
   }
   void visit(Text_Flow::Pinned const &e) override {
     pad_to_col(e.col);
