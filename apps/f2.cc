@@ -103,14 +103,17 @@ public:
     fixed-format line.  The default constructor makes an empty control block */
 struct Fixed_Control : public Entity<Fixed_Control> {
   Fixed_Control() : Entity{Type::FIXED_CONTROL}, text{} {}
+  //! verbatim control block (copy)
   explicit Fixed_Control(std::string const &txt)
       : Entity{Type::FIXED_CONTROL}, text{txt} {
     assert(text.size() == 6);
   }
+  //! verbatim control block (move)
   explicit Fixed_Control(std::string &&txt)
       : Entity{Type::FIXED_CONTROL}, text{std::move(txt)} {
     assert(text.size() == 6);
   }
+  //! labelled line
   Fixed_Control(unsigned const label, bool left_justified)
       : Entity{Type::FIXED_CONTROL}, text{"      "} {
     assert(label > 0 && label < 99999);
@@ -121,10 +124,12 @@ struct Fixed_Control : public Entity<Fixed_Control> {
       text.replace(5 - ls.size(), ls.size(), ls);
     }
   }
+  //! continuation line
   explicit Fixed_Control(char const continuation)
       : Entity{Type::FIXED_CONTROL}, text{"      "} {
     text[5] = continuation;
   }
+  //! fixed format comment: "[cC\*]<ctext>"
   Fixed_Control(std::string const &ctext, char const comment)
       : Entity{Type::FIXED_CONTROL}, text{} {
     text.push_back(comment);
